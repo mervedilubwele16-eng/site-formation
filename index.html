@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>[Nom de la formation] — Formation</title>
+  <meta name="description" content="[Description courte de la formation : pour qui, quel résultat, en combien de temps.]">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== EN-TÊTE ===== -->
+  <header class="header">
+    <div class="container header__inner">
+      <a href="#" class="logo">[Votre<span>Logo</span>]</a>
+      <button class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+      <nav class="nav" id="nav">
+        <a href="#programme">Programme</a>
+        <a href="#pour-qui">Pour qui ?</a>
+        <a href="#formateur">Formateur</a>
+        <a href="#tarifs">Tarifs</a>
+        <a href="#faq">FAQ</a>
+        <a href="#inscription" class="btn btn--small">S'inscrire</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+      <div class="container hero__inner">
+        <div class="hero__text">
+          <span class="badge">Prochaine session : [date]</span>
+          <h1>[Titre accrocheur : le résultat que vos élèves vont obtenir]</h1>
+          <p class="lead">[Sous-titre : en X semaines, apprenez à … même si vous débutez.]</p>
+          <div class="hero__cta">
+            <a href="#inscription" class="btn">Je m'inscris</a>
+            <a href="#programme" class="btn btn--ghost">Voir le programme</a>
+          </div>
+          <ul class="hero__facts">
+            <li><strong>[X] h</strong> de contenu</li>
+            <li><strong>[X]</strong> modules</li>
+            <li><strong>[En ligne / Présentiel]</strong></li>
+            <li><strong>Certificat</strong> de fin de formation</li>
+          </ul>
+        </div>
+        <div class="hero__visual" aria-hidden="true">
+          <div class="hero__card">
+            <div class="hero__play">▶</div>
+            <p>[Vidéo de présentation ou image]</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== BÉNÉFICES ===== -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section__title">Ce que vous allez apprendre</h2>
+        <div class="grid grid--3">
+          <article class="card">
+            <div class="card__icon">🎯</div>
+            <h3>[Compétence 1]</h3>
+            <p>[Expliquez concrètement ce que l'élève saura faire.]</p>
+          </article>
+          <article class="card">
+            <div class="card__icon">🚀</div>
+            <h3>[Compétence 2]</h3>
+            <p>[Expliquez concrètement ce que l'élève saura faire.]</p>
+          </article>
+          <article class="card">
+            <div class="card__icon">🏆</div>
+            <h3>[Compétence 3]</h3>
+            <p>[Expliquez concrètement ce que l'élève saura faire.]</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PROGRAMME ===== -->
+    <section class="section section--alt" id="programme">
+      <div class="container container--narrow">
+        <h2 class="section__title">Le programme</h2>
+        <p class="section__intro">[X] modules progressifs, du niveau débutant jusqu'à l'autonomie.</p>
+        <div class="modules">
+          <details class="module" open>
+            <summary><span class="module__num">01</span> [Titre du module 1] <span class="module__time">[durée]</span></summary>
+            <ul>
+              <li>[Leçon 1]</li>
+              <li>[Leçon 2]</li>
+              <li>[Leçon 3]</li>
+            </ul>
+          </details>
+          <details class="module">
+            <summary><span class="module__num">02</span> [Titre du module 2] <span class="module__time">[durée]</span></summary>
+            <ul>
+              <li>[Leçon 1]</li>
+              <li>[Leçon 2]</li>
+              <li>[Leçon 3]</li>
+            </ul>
+          </details>
+          <details class="module">
+            <summary><span class="module__num">03</span> [Titre du module 3] <span class="module__time">[durée]</span></summary>
+            <ul>
+              <li>[Leçon 1]</li>
+              <li>[Leçon 2]</li>
+              <li>[Leçon 3]</li>
+            </ul>
+          </details>
+          <details class="module">
+            <summary><span class="module__num">04</span> [Titre du module 4] <span class="module__time">[durée]</span></summary>
+            <ul>
+              <li>[Leçon 1]</li>
+              <li>[Leçon 2]</li>
+              <li>[Projet final / évaluation]</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== POUR QUI ===== -->
+    <section class="section" id="pour-qui">
+      <div class="container grid grid--2">
+        <div class="panel panel--yes">
+          <h2>Cette formation est faite pour vous si…</h2>
+          <ul class="checklist">
+            <li>[Profil 1 : ex. vous débutez et voulez une méthode claire]</li>
+            <li>[Profil 2 : ex. vous voulez vous reconvertir]</li>
+            <li>[Profil 3 : ex. vous avez X heures par semaine]</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h2>Prérequis</h2>
+          <ul class="checklist checklist--neutral">
+            <li>[Prérequis 1 : ex. un ordinateur et une connexion internet]</li>
+            <li>[Prérequis 2 : ex. aucune connaissance préalable]</li>
+            <li>[Prérequis 3]</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FORMATEUR ===== -->
+    <section class="section section--alt" id="formateur">
+      <div class="container trainer">
+        <div class="trainer__photo" aria-label="Photo du formateur">[Photo]</div>
+        <div>
+          <h2 class="section__title section__title--left">Votre formateur·rice</h2>
+          <h3>[Prénom Nom]</h3>
+          <p class="muted">[Titre / métier]</p>
+          <p>[Votre parcours en 3–4 phrases : expérience, résultats, nombre de personnes formées, pourquoi vous avez créé cette formation.]</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TÉMOIGNAGES ===== -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section__title">Ils ont suivi la formation</h2>
+        <div class="grid grid--3">
+          <blockquote class="quote">
+            <p>« [Témoignage réel d'un élève.] »</p>
+            <cite>[Prénom N.] — [métier]</cite>
+          </blockquote>
+          <blockquote class="quote">
+            <p>« [Témoignage réel d'un élève.] »</p>
+            <cite>[Prénom N.] — [métier]</cite>
+          </blockquote>
+          <blockquote class="quote">
+            <p>« [Témoignage réel d'un élève.] »</p>
+            <cite>[Prénom N.] — [métier]</cite>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TARIFS ===== -->
+    <section class="section section--alt" id="tarifs">
+      <div class="container">
+        <h2 class="section__title">Tarifs</h2>
+        <div class="grid grid--3 pricing">
+          <div class="price">
+            <h3>Essentiel</h3>
+            <p class="price__amount">[XX] €</p>
+            <ul>
+              <li>Accès aux vidéos</li>
+              <li>Supports PDF</li>
+              <li>[Durée d'accès]</li>
+            </ul>
+            <a href="#inscription" class="btn btn--ghost" data-plan="Essentiel">Choisir</a>
+          </div>
+          <div class="price price--featured">
+            <span class="price__tag">Le plus choisi</span>
+            <h3>Complet</h3>
+            <p class="price__amount">[XXX] €</p>
+            <ul>
+              <li>Tout l'Essentiel</li>
+              <li>Exercices corrigés</li>
+              <li>Groupe d'entraide</li>
+              <li>Certificat</li>
+            </ul>
+            <a href="#inscription" class="btn" data-plan="Complet">Choisir</a>
+          </div>
+          <div class="price">
+            <h3>Accompagnement</h3>
+            <p class="price__amount">[XXX] €</p>
+            <ul>
+              <li>Tout le Complet</li>
+              <li>[X] sessions individuelles</li>
+              <li>Suivi personnalisé</li>
+            </ul>
+            <a href="#inscription" class="btn btn--ghost" data-plan="Accompagnement">Choisir</a>
+          </div>
+        </div>
+        <p class="note">[Paiement en plusieurs fois possible ? Financement CPF / OPCO ? Garantie satisfait ou remboursé ?]</p>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="section" id="faq">
+      <div class="container container--narrow">
+        <h2 class="section__title">Questions fréquentes</h2>
+        <details class="faq">
+          <summary>Combien de temps ai-je accès à la formation ?</summary>
+          <p>[Réponse : ex. accès à vie / 12 mois.]</p>
+        </details>
+        <details class="faq">
+          <summary>La formation est-elle en ligne ou en présentiel ?</summary>
+          <p>[Réponse.]</p>
+        </details>
+        <details class="faq">
+          <summary>Puis-je être remboursé·e ?</summary>
+          <p>[Réponse : conditions de remboursement / droit de rétractation de 14 jours.]</p>
+        </details>
+        <details class="faq">
+          <summary>Est-ce que je reçois un certificat ?</summary>
+          <p>[Réponse.]</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- ===== INSCRIPTION ===== -->
+    <section class="section section--cta" id="inscription">
+      <div class="container container--narrow">
+        <h2 class="section__title">Inscrivez-vous</h2>
+        <p class="section__intro">Remplissez le formulaire, nous revenons vers vous sous 24 h.</p>
+        <!-- Remplacer l'action par votre service (Formspree, Netlify Forms, etc.) ou un lien de paiement -->
+        <form class="form" id="form" action="#" method="POST">
+          <div class="form__row">
+            <label>Prénom et nom
+              <input type="text" name="nom" required autocomplete="name">
+            </label>
+            <label>E-mail
+              <input type="email" name="email" required autocomplete="email">
+            </label>
+          </div>
+          <div class="form__row">
+            <label>Téléphone
+              <input type="tel" name="telephone" autocomplete="tel">
+            </label>
+            <label>Formule
+              <select name="formule" id="formule">
+                <option>Essentiel</option>
+                <option selected>Complet</option>
+                <option>Accompagnement</option>
+              </select>
+            </label>
+          </div>
+          <label>Message (facultatif)
+            <textarea name="message" rows="4"></textarea>
+          </label>
+          <label class="form__consent">
+            <input type="checkbox" required>
+            J'accepte que mes données soient utilisées pour traiter ma demande (voir la politique de confidentialité).
+          </label>
+          <button type="submit" class="btn btn--full">Envoyer ma demande</button>
+          <p class="form__status" id="form-status" role="status"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== PIED DE PAGE ===== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div>
+        <p class="logo">[Votre<span>Logo</span>]</p>
+        <p class="muted">[Adresse e-mail de contact] · [Téléphone]</p>
+      </div>
+      <nav>
+        <a href="#">Mentions légales</a>
+        <a href="#">CGV</a>
+        <a href="#">Politique de confidentialité</a>
+      </nav>
+      <p class="muted">© <span id="year"></span> [Nom de l'entreprise]. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
