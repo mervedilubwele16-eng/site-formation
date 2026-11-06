@@ -1,23 +1,22 @@
-# Site de formation
+# SLA — Stakeup Leverage Academy
 
-Site vitrine d'une page pour présenter et vendre une formation.
+Site vitrine de la formation SLA (marketing digital et vente en ligne).
 
 ## Fichiers
 
-- `index.html` — le contenu du site (tous les textes entre `[crochets]` sont à remplacer)
-- `style.css` — l'apparence (les couleurs se changent en haut du fichier, dans `:root`)
-- `script.js` — menu mobile, formulaire, sélection de la formule
+- `index.html` — la page principale
+- `mentions-legales.html` — mentions légales (champs `[à compléter]` en orange)
+- `style.css` — l'apparence (couleurs SLA en haut du fichier, dans `:root`)
+- `script.js` — menu mobile et bouton d'achat fixe sur mobile
 
-## Voir le site
+Tous les boutons « Rejoindre » mènent à la fiche produit Shopify :
+https://rwr6z0-er.myshopify.com/products/sla-stakeup-leverage-academy
 
-Ouvrir `index.html` dans un navigateur. Aucun outil à installer.
+## À remplacer
+
+- **Logo** : déposer `logo.png` et suivre le commentaire dans l'en-tête de `index.html`
+- **Photo du formateur** : déposer `mervedi.jpg` et suivre le commentaire dans la section Formateur
 
 ## Mettre en ligne (gratuit)
 
-- **GitHub Pages** : Settings → Pages → Branch → `main` / root
-- ou **Netlify** / **Vercel** : glisser-déposer le dossier
-
-## Brancher le formulaire
-
-Remplacer `action="#"` dans `index.html` par l'adresse d'un service comme
-[Formspree](https://formspree.io) ou utiliser un lien de paiement (Stripe, PayPal…).
+GitHub Pages : Settings → Pages → Branch `main`, dossier `/ (root)`.

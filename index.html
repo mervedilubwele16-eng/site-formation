@@ -3,78 +3,106 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>[Nom de la formation] — Formation</title>
-  <meta name="description" content="[Description courte de la formation : pour qui, quel résultat, en combien de temps.]">
+  <title>SLA — Stakeup Leverage Academy</title>
+  <meta name="description" content="Formation 100 % en ligne en marketing digital et vente en ligne : ouvre ta boutique et crée du contenu qui attire des acheteurs, depuis ton téléphone. 6 modules, 57 leçons, accès à vie, 50 €.">
+  <meta name="theme-color" content="#080C18">
+  <meta property="og:title" content="SLA — Stakeup Leverage Academy">
+  <meta property="og:description" content="Un petit effort. Un levier immense. Ouvre ta boutique en ligne et crée du contenu qui attire des acheteurs, depuis ton téléphone.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23080C18'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='900' font-size='24' fill='%23A6B8CE' text-anchor='middle'%3ESLA%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ===== EN-TÊTE ===== -->
+  <!-- Lien d'achat (boutique Shopify) : il apparaît sur tous les boutons "Rejoindre".
+       https://rwr6z0-er.myshopify.com/products/sla-stakeup-leverage-academy -->
+
   <header class="header">
     <div class="container header__inner">
-      <a href="#" class="logo">[Votre<span>Logo</span>]</a>
-      <button class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+      <!-- Pour mettre le vrai logo : remplacer ce bloc par <img src="logo.png" alt="SLA" height="40"> -->
+      <a href="#" class="logo" aria-label="SLA — Stakeup Leverage Academy, accueil">
+        <span class="logo__mark">SLA</span>
+        <span class="logo__name">Stakeup Leverage<br>Academy</span>
+      </a>
+      <button class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav">
+        <span></span><span></span><span></span>
+      </button>
       <nav class="nav" id="nav">
         <a href="#programme">Programme</a>
         <a href="#pour-qui">Pour qui ?</a>
         <a href="#formateur">Formateur</a>
-        <a href="#tarifs">Tarifs</a>
+        <a href="#tarif">Tarif</a>
         <a href="#faq">FAQ</a>
-        <a href="#inscription" class="btn btn--small">S'inscrire</a>
+        <a href="https://rwr6z0-er.myshopify.com/products/sla-stakeup-leverage-academy" class="btn btn--small">Rejoindre — 50 €</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <!-- ===== HERO ===== -->
+    <!-- ===== ACCUEIL ===== -->
     <section class="hero">
       <div class="container hero__inner">
         <div class="hero__text">
-          <span class="badge">Prochaine session : [date]</span>
-          <h1>[Titre accrocheur : le résultat que vos élèves vont obtenir]</h1>
-          <p class="lead">[Sous-titre : en X semaines, apprenez à … même si vous débutez.]</p>
+          <p class="eyebrow">Marketing digital &amp; vente en ligne</p>
+          <h1>Ouvre ta boutique en ligne et crée du contenu qui <span class="hl">attire des acheteurs</span>.</h1>
+          <p class="tagline">Un petit effort. Un levier immense.</p>
+          <p class="lead">La formation 100 % en ligne pensée pour les débutants qui n'ont qu'un smartphone. Tu avances à ton rythme, en vidéo, depuis ton téléphone.</p>
           <div class="hero__cta">
-            <a href="#inscription" class="btn">Je m'inscris</a>
+            <a href="https://rwr6z0-er.myshopify.com/products/sla-stakeup-leverage-academy" class="btn">Rejoindre SLA — 50 €</a>
             <a href="#programme" class="btn btn--ghost">Voir le programme</a>
           </div>
-          <ul class="hero__facts">
-            <li><strong>[X] h</strong> de contenu</li>
-            <li><strong>[X]</strong> modules</li>
-            <li><strong>[En ligne / Présentiel]</strong></li>
-            <li><strong>Certificat</strong> de fin de formation</li>
+          <ul class="facts">
+            <li><strong>6</strong> modules</li>
+            <li><strong>57</strong> leçons</li>
+            <li><strong>Accès</strong> à vie</li>
+            <li><strong>100 %</strong> sur mobile</li>
           </ul>
         </div>
+
         <div class="hero__visual" aria-hidden="true">
-          <div class="hero__card">
-            <div class="hero__play">▶</div>
-            <p>[Vidéo de présentation ou image]</p>
+          <div class="phone">
+            <div class="phone__notch"></div>
+            <div class="phone__screen">
+              <p class="phone__label">Ta progression</p>
+              <div class="phone__bar"><span style="width:50%"></span></div>
+              <ul class="phone__list">
+                <li class="done"><b>00</b> Ton point de départ</li>
+                <li class="done"><b>01</b> Créer du contenu</li>
+                <li class="done"><b>02</b> L'IA pour ta boutique</li>
+                <li class="now"><b>03</b> Ouvrir sa boutique</li>
+                <li><b>04</b> Convaincre et vendre</li>
+                <li><b>05</b> Diversifier ses produits</li>
+              </ul>
+              <div class="phone__play">▶ Reprendre la leçon</div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== BÉNÉFICES ===== -->
+    <!-- ===== RÉSULTATS ===== -->
     <section class="section">
       <div class="container">
-        <h2 class="section__title">Ce que vous allez apprendre</h2>
+        <p class="eyebrow eyebrow--center">À la fin de la formation</p>
+        <h2 class="section__title">Ce que tu auras en main</h2>
         <div class="grid grid--3">
           <article class="card">
-            <div class="card__icon">🎯</div>
-            <h3>[Compétence 1]</h3>
-            <p>[Expliquez concrètement ce que l'élève saura faire.]</p>
+            <div class="card__icon">01</div>
+            <h3>Ta boutique ouverte</h3>
+            <p>Une boutique en ligne prête à vendre, sur Chariow ou Shopify.</p>
           </article>
           <article class="card">
-            <div class="card__icon">🚀</div>
-            <h3>[Compétence 2]</h3>
-            <p>[Expliquez concrètement ce que l'élève saura faire.]</p>
+            <div class="card__icon">02</div>
+            <h3>Du contenu qui attire</h3>
+            <p>Tu sais créer, depuis ton téléphone, du contenu qui fait venir des acheteurs.</p>
           </article>
           <article class="card">
-            <div class="card__icon">🏆</div>
-            <h3>[Compétence 3]</h3>
-            <p>[Expliquez concrètement ce que l'élève saura faire.]</p>
+            <div class="card__icon">03</div>
+            <h3>Une méthode pour vendre</h3>
+            <p>Tu sais convaincre, vendre, utiliser l'IA et proposer plusieurs produits.</p>
           </article>
         </div>
       </div>
@@ -83,222 +111,195 @@
     <!-- ===== PROGRAMME ===== -->
     <section class="section section--alt" id="programme">
       <div class="container container--narrow">
-        <h2 class="section__title">Le programme</h2>
-        <p class="section__intro">[X] modules progressifs, du niveau débutant jusqu'à l'autonomie.</p>
-        <div class="modules">
-          <details class="module" open>
-            <summary><span class="module__num">01</span> [Titre du module 1] <span class="module__time">[durée]</span></summary>
-            <ul>
-              <li>[Leçon 1]</li>
-              <li>[Leçon 2]</li>
-              <li>[Leçon 3]</li>
-            </ul>
-          </details>
-          <details class="module">
-            <summary><span class="module__num">02</span> [Titre du module 2] <span class="module__time">[durée]</span></summary>
-            <ul>
-              <li>[Leçon 1]</li>
-              <li>[Leçon 2]</li>
-              <li>[Leçon 3]</li>
-            </ul>
-          </details>
-          <details class="module">
-            <summary><span class="module__num">03</span> [Titre du module 3] <span class="module__time">[durée]</span></summary>
-            <ul>
-              <li>[Leçon 1]</li>
-              <li>[Leçon 2]</li>
-              <li>[Leçon 3]</li>
-            </ul>
-          </details>
-          <details class="module">
-            <summary><span class="module__num">04</span> [Titre du module 4] <span class="module__time">[durée]</span></summary>
-            <ul>
-              <li>[Leçon 1]</li>
-              <li>[Leçon 2]</li>
-              <li>[Projet final / évaluation]</li>
-            </ul>
-          </details>
-        </div>
+        <p class="eyebrow eyebrow--center">Le programme</p>
+        <h2 class="section__title">6 modules, 57 leçons</h2>
+        <p class="section__intro">Rythme conseillé : 5 semaines. Chaque module se termine par un livrable concret.</p>
+        <ol class="modules">
+          <li class="module">
+            <span class="module__num">00</span>
+            <div><h3>Ton point de départ</h3><span class="module__tag">Livrable</span></div>
+          </li>
+          <li class="module">
+            <span class="module__num">01</span>
+            <div><h3>Créer du contenu</h3><span class="module__tag">Livrable</span></div>
+          </li>
+          <li class="module">
+            <span class="module__num">02</span>
+            <div><h3>L'IA pour ta boutique</h3><span class="module__tag">Livrable</span></div>
+          </li>
+          <li class="module">
+            <span class="module__num">03</span>
+            <div><h3>Ouvrir sa boutique <small>Chariow, Shopify</small></h3><span class="module__tag">Livrable</span></div>
+          </li>
+          <li class="module">
+            <span class="module__num">04</span>
+            <div><h3>Convaincre et vendre</h3><span class="module__tag">Livrable</span></div>
+          </li>
+          <li class="module">
+            <span class="module__num">05</span>
+            <div><h3>Diversifier ses produits</h3><span class="module__tag">Livrable</span></div>
+          </li>
+        </ol>
       </div>
     </section>
 
     <!-- ===== POUR QUI ===== -->
     <section class="section" id="pour-qui">
       <div class="container grid grid--2">
-        <div class="panel panel--yes">
-          <h2>Cette formation est faite pour vous si…</h2>
+        <div class="panel panel--accent">
+          <h2>SLA est faite pour toi si…</h2>
           <ul class="checklist">
-            <li>[Profil 1 : ex. vous débutez et voulez une méthode claire]</li>
-            <li>[Profil 2 : ex. vous voulez vous reconvertir]</li>
-            <li>[Profil 3 : ex. vous avez X heures par semaine]</li>
+            <li>tu débutes et tu veux vendre en ligne ;</li>
+            <li>tu n'as qu'un smartphone, pas d'ordinateur ;</li>
+            <li>tu veux avancer à ton rythme, sans horaire imposé.</li>
           </ul>
         </div>
         <div class="panel">
           <h2>Prérequis</h2>
-          <ul class="checklist checklist--neutral">
-            <li>[Prérequis 1 : ex. un ordinateur et une connexion internet]</li>
-            <li>[Prérequis 2 : ex. aucune connaissance préalable]</li>
-            <li>[Prérequis 3]</li>
-          </ul>
+          <p class="panel__big">Aucun.</p>
+          <p>Pas besoin d'expérience en marketing ni en vente. Toutes les leçons sont en vidéo et se suivent depuis ton téléphone.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== COMMENT ÇA MARCHE ===== -->
+    <section class="section section--alt">
+      <div class="container">
+        <p class="eyebrow eyebrow--center">Comment ça marche</p>
+        <h2 class="section__title">3 étapes, c'est tout</h2>
+        <div class="grid grid--3 steps">
+          <div class="step">
+            <span class="step__num">1</span>
+            <h3>Tu rejoins SLA</h3>
+            <p>Paiement unique de 50 € et sécurisé, par Paystack ou PayPal.</p>
+          </div>
+          <div class="step">
+            <span class="step__num">2</span>
+            <h3>Tu reçois ton accès</h3>
+            <p>Il t'est envoyé automatiquement juste après l'achat.</p>
+          </div>
+          <div class="step">
+            <span class="step__num">3</span>
+            <h3>Tu avances à ton rythme</h3>
+            <p>Un module après l'autre, un livrable à chaque fois, jusqu'à ta boutique ouverte.</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ===== FORMATEUR ===== -->
-    <section class="section section--alt" id="formateur">
+    <section class="section" id="formateur">
       <div class="container trainer">
-        <div class="trainer__photo" aria-label="Photo du formateur">[Photo]</div>
+        <!-- Pour mettre la photo : remplacer ce bloc par <img class="trainer__photo" src="mervedi.jpg" alt="Mervedi Lubwele"> -->
+        <div class="trainer__photo" aria-hidden="true">ML</div>
         <div>
-          <h2 class="section__title section__title--left">Votre formateur·rice</h2>
-          <h3>[Prénom Nom]</h3>
-          <p class="muted">[Titre / métier]</p>
-          <p>[Votre parcours en 3–4 phrases : expérience, résultats, nombre de personnes formées, pourquoi vous avez créé cette formation.]</p>
+          <p class="eyebrow">Ton formateur</p>
+          <h2 class="trainer__name">Mervedi Lubwele</h2>
+          <p class="trainer__role">Fondateur de Stakeup DFA</p>
+          <!-- PARCOURS À COMPLÉTER : 3 lignes (expérience, résultats, pourquoi SLA). -->
+          <p>Mervedi Lubwele a fondé Stakeup DFA et créé SLA — Stakeup Leverage Academy, pour que toute personne équipée d'un simple smartphone puisse lancer sa boutique en ligne.</p>
         </div>
       </div>
     </section>
 
-    <!-- ===== TÉMOIGNAGES ===== -->
-    <section class="section">
-      <div class="container">
-        <h2 class="section__title">Ils ont suivi la formation</h2>
-        <div class="grid grid--3">
-          <blockquote class="quote">
-            <p>« [Témoignage réel d'un élève.] »</p>
-            <cite>[Prénom N.] — [métier]</cite>
-          </blockquote>
-          <blockquote class="quote">
-            <p>« [Témoignage réel d'un élève.] »</p>
-            <cite>[Prénom N.] — [métier]</cite>
-          </blockquote>
-          <blockquote class="quote">
-            <p>« [Témoignage réel d'un élève.] »</p>
-            <cite>[Prénom N.] — [métier]</cite>
-          </blockquote>
+    <!-- ===== TARIF ===== -->
+    <section class="section section--alt" id="tarif">
+      <div class="container container--narrow">
+        <p class="eyebrow eyebrow--center">Tarif</p>
+        <h2 class="section__title">Une seule formule, tout compris</h2>
+        <div class="price">
+          <p class="price__name">SLA — Stakeup Leverage Academy</p>
+          <p class="price__amount">50 €</p>
+          <p class="price__sub">Paiement unique</p>
+          <ul class="checklist">
+            <li>6 modules, 57 leçons en vidéo</li>
+            <li>Un livrable à la fin de chaque module</li>
+            <li>Accès à vie</li>
+            <li>Mises à jour comprises</li>
+            <li>Conçue pour être suivie sur téléphone</li>
+          </ul>
+          <a href="https://rwr6z0-er.myshopify.com/products/sla-stakeup-leverage-academy" class="btn btn--full">Rejoindre SLA — 50 €</a>
+          <p class="price__note">Paiement sécurisé par Paystack ou PayPal · Remboursement si tu ne reçois pas ton accès sous 24 h.</p>
         </div>
-      </div>
-    </section>
-
-    <!-- ===== TARIFS ===== -->
-    <section class="section section--alt" id="tarifs">
-      <div class="container">
-        <h2 class="section__title">Tarifs</h2>
-        <div class="grid grid--3 pricing">
-          <div class="price">
-            <h3>Essentiel</h3>
-            <p class="price__amount">[XX] €</p>
-            <ul>
-              <li>Accès aux vidéos</li>
-              <li>Supports PDF</li>
-              <li>[Durée d'accès]</li>
-            </ul>
-            <a href="#inscription" class="btn btn--ghost" data-plan="Essentiel">Choisir</a>
-          </div>
-          <div class="price price--featured">
-            <span class="price__tag">Le plus choisi</span>
-            <h3>Complet</h3>
-            <p class="price__amount">[XXX] €</p>
-            <ul>
-              <li>Tout l'Essentiel</li>
-              <li>Exercices corrigés</li>
-              <li>Groupe d'entraide</li>
-              <li>Certificat</li>
-            </ul>
-            <a href="#inscription" class="btn" data-plan="Complet">Choisir</a>
-          </div>
-          <div class="price">
-            <h3>Accompagnement</h3>
-            <p class="price__amount">[XXX] €</p>
-            <ul>
-              <li>Tout le Complet</li>
-              <li>[X] sessions individuelles</li>
-              <li>Suivi personnalisé</li>
-            </ul>
-            <a href="#inscription" class="btn btn--ghost" data-plan="Accompagnement">Choisir</a>
-          </div>
-        </div>
-        <p class="note">[Paiement en plusieurs fois possible ? Financement CPF / OPCO ? Garantie satisfait ou remboursé ?]</p>
       </div>
     </section>
 
     <!-- ===== FAQ ===== -->
     <section class="section" id="faq">
       <div class="container container--narrow">
+        <p class="eyebrow eyebrow--center">FAQ</p>
         <h2 class="section__title">Questions fréquentes</h2>
         <details class="faq">
-          <summary>Combien de temps ai-je accès à la formation ?</summary>
-          <p>[Réponse : ex. accès à vie / 12 mois.]</p>
+          <summary>Comment est-ce que je reçois la formation ?</summary>
+          <p>Juste après ton paiement, tu reçois automatiquement un PDF qui contient ton accès à la formation.</p>
         </details>
         <details class="faq">
-          <summary>La formation est-elle en ligne ou en présentiel ?</summary>
-          <p>[Réponse.]</p>
+          <summary>Je n'ai qu'un téléphone. Est-ce que ça suffit ?</summary>
+          <p>Oui. SLA est pensée pour être suivie entièrement depuis un smartphone, des vidéos jusqu'à l'ouverture de ta boutique.</p>
         </details>
         <details class="faq">
-          <summary>Puis-je être remboursé·e ?</summary>
-          <p>[Réponse : conditions de remboursement / droit de rétractation de 14 jours.]</p>
+          <summary>Combien de temps faut-il pour terminer ?</summary>
+          <p>Tu as accès à vie et tu avances à ton rythme. Le rythme conseillé est de 5 semaines.</p>
+        </details>
+        <details class="faq">
+          <summary>Y a-t-il des cours en direct ou à des horaires fixes ?</summary>
+          <p>Non. Tout est en vidéo, disponible quand tu veux. Il n'y a ni date de session ni limite de places.</p>
+        </details>
+        <details class="faq">
+          <summary>Quels moyens de paiement sont acceptés ?</summary>
+          <p>Le paiement se fait sur notre boutique sécurisée, par Paystack ou PayPal. C'est un paiement unique de 50 € ; le paiement en plusieurs fois n'est pas proposé.</p>
+        </details>
+        <details class="faq">
+          <summary>Et si je ne reçois pas mon accès ?</summary>
+          <p>Si tu ne reçois pas ton accès dans les 24 heures qui suivent l'achat, écris-nous à <a href="mailto:mervedilubwele16@gmail.com">mervedilubwele16@gmail.com</a> : tu es remboursé·e.</p>
         </details>
         <details class="faq">
           <summary>Est-ce que je reçois un certificat ?</summary>
-          <p>[Réponse.]</p>
+          <p>Non, SLA ne délivre pas de certificat et n'est pas finançable par le CPF ou un OPCO. Ce que tu obtiens, c'est ta boutique ouverte et des livrables concrets.</p>
+        </details>
+        <details class="faq">
+          <summary>Les mises à jour sont-elles payantes ?</summary>
+          <p>Non. Les mises à jour de la formation sont comprises dans ton accès à vie.</p>
         </details>
       </div>
     </section>
 
-    <!-- ===== INSCRIPTION ===== -->
-    <section class="section section--cta" id="inscription">
-      <div class="container container--narrow">
-        <h2 class="section__title">Inscrivez-vous</h2>
-        <p class="section__intro">Remplissez le formulaire, nous revenons vers vous sous 24 h.</p>
-        <!-- Remplacer l'action par votre service (Formspree, Netlify Forms, etc.) ou un lien de paiement -->
-        <form class="form" id="form" action="#" method="POST">
-          <div class="form__row">
-            <label>Prénom et nom
-              <input type="text" name="nom" required autocomplete="name">
-            </label>
-            <label>E-mail
-              <input type="email" name="email" required autocomplete="email">
-            </label>
-          </div>
-          <div class="form__row">
-            <label>Téléphone
-              <input type="tel" name="telephone" autocomplete="tel">
-            </label>
-            <label>Formule
-              <select name="formule" id="formule">
-                <option>Essentiel</option>
-                <option selected>Complet</option>
-                <option>Accompagnement</option>
-              </select>
-            </label>
-          </div>
-          <label>Message (facultatif)
-            <textarea name="message" rows="4"></textarea>
-          </label>
-          <label class="form__consent">
-            <input type="checkbox" required>
-            J'accepte que mes données soient utilisées pour traiter ma demande (voir la politique de confidentialité).
-          </label>
-          <button type="submit" class="btn btn--full">Envoyer ma demande</button>
-          <p class="form__status" id="form-status" role="status"></p>
-        </form>
+    <!-- ===== APPEL FINAL ===== -->
+    <section class="final">
+      <div class="container container--narrow final__inner">
+        <h2>Un petit effort.<br><span class="hl">Un levier immense.</span></h2>
+        <p>Rejoins SLA et ouvre ta boutique en ligne depuis ton téléphone.</p>
+        <a href="https://rwr6z0-er.myshopify.com/products/sla-stakeup-leverage-academy" class="btn">Rejoindre SLA — 50 €</a>
       </div>
     </section>
   </main>
 
-  <!-- ===== PIED DE PAGE ===== -->
   <footer class="footer">
     <div class="container footer__inner">
       <div>
-        <p class="logo">[Votre<span>Logo</span>]</p>
-        <p class="muted">[Adresse e-mail de contact] · [Téléphone]</p>
+        <a href="#" class="logo">
+          <span class="logo__mark">SLA</span>
+          <span class="logo__name">Stakeup Leverage<br>Academy</span>
+        </a>
+        <p class="footer__contact">
+          <a href="mailto:mervedilubwele16@gmail.com">mervedilubwele16@gmail.com</a><br>
+          Campus uvillage, 30000 Fès, Maroc
+        </p>
       </div>
-      <nav>
-        <a href="#">Mentions légales</a>
-        <a href="#">CGV</a>
-        <a href="#">Politique de confidentialité</a>
+      <nav class="footer__nav">
+        <a href="#programme">Programme</a>
+        <a href="#tarif">Tarif</a>
+        <a href="#faq">FAQ</a>
+        <a href="mentions-legales.html">Mentions légales</a>
       </nav>
-      <p class="muted">© <span id="year"></span> [Nom de l'entreprise]. Tous droits réservés.</p>
+      <p class="footer__copy">© <span id="year">2026</span> SLA — Stakeup Leverage Academy · Stakeup DFA</p>
     </div>
   </footer>
+
+  <!-- Bouton d'achat fixe, visible sur mobile -->
+  <div class="mobile-cta">
+    <a href="https://rwr6z0-er.myshopify.com/products/sla-stakeup-leverage-academy" class="btn btn--full">Rejoindre SLA — 50 €</a>
+  </div>
 
   <script src="script.js"></script>
 </body>
