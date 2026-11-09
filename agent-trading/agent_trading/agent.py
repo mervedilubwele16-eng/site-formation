@@ -58,6 +58,11 @@ class Agent:
         self.engine = Engine(cfg, broker, rs, positions, telegram_notifier())
         self.engine.last_prices = st.get("last_prices", {})
         self.last_bar: dict = st.get("last_bar", {})
+        if rs.target_reached:
+            log.info("Le cycle précédent avait atteint son objectif : démarrage d'un nouveau cycle.")
+            self.engine.start_new_cycle()
+        elif not rs.cycle_start_equity:
+            rs.cycle_start_equity = self.engine.equity()
 
     def _load_state(self) -> dict:
         if self.state_path.exists():
@@ -104,7 +109,9 @@ class Agent:
         if new_bar:
             self.engine.risk.tick_cooldowns()
             rs = self.engine.risk.state
-            log.info("Capital : %.2f USDT | positions : %s%s", self.engine.equity(),
+            target = self.cfg.get("objectif_gain", 0)
+            log.info("Capital : %.2f USDT | gain du cycle : %+.2f%s | positions : %s%s",
+                     self.engine.equity(), self.engine.gain(), f" / {target:.0f}" if target else "",
                      list(self.engine.positions) or "aucune",
                      f" | EN PAUSE : {rs.halt_reason}" if rs.halted else "")
         self.save_state()
@@ -119,6 +126,9 @@ class Agent:
         while self.running:
             try:
                 self.step()
+                if self.engine.risk.state.target_reached:
+                    self.running = False
+                    break
             except Exception:
                 log.exception("Erreur inattendue — l'agent continue")
             for _ in range(int(self.cfg["loop_seconds"])):
@@ -126,7 +136,10 @@ class Agent:
                     break
                 time.sleep(1)
         self.save_state()
-        log.info("Agent arrêté proprement. Les positions ouvertes restent protégées par leur stop.")
+        if self.engine.risk.state.target_reached:
+            log.info("Agent arrêté : objectif atteint, tout est vendu et le gain est sécurisé.")
+        else:
+            log.info("Agent arrêté proprement. Les positions ouvertes restent protégées par leur stop.")
 
     def _stop(self, *_):
         log.info("Arrêt demandé…")

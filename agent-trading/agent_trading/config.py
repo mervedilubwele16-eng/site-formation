@@ -14,6 +14,7 @@ DEFAULTS = {
     "loop_seconds": 300,          # fréquence d'analyse
     "capital_initial": 1000.0,    # capital fictif en mode paper (USDT)
     "fees": 0.001,                # 0,1 % par ordre
+    "objectif_gain": 12000.0,     # gain (USDT) à atteindre ; l'agent vend tout et s'arrête (0 = désactivé)
     "strategy": {
         "ema_fast": 20,
         "ema_slow": 50,
@@ -67,5 +68,7 @@ def validate(cfg: dict) -> None:
         raise ValueError("risk_per_trade doit être entre 0 et 3 % (au-delà, c'est du jeu, pas du trading)")
     if not 0 < r["max_drawdown"] <= 0.5:
         raise ValueError("max_drawdown doit être entre 0 et 50 %")
+    if cfg["objectif_gain"] < 0:
+        raise ValueError("objectif_gain doit être positif (0 = désactivé)")
     if r["stop_atr_mult"] <= 0:
         raise ValueError("stop_atr_mult doit être > 0")

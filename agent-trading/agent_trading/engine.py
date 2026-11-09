@@ -32,6 +32,8 @@ class Engine:
         ts = df.index[-1]
         self.last_prices[symbol] = float(bar["close"])
         self.risk.update_equity(self.equity(), str(ts.date()))
+        if self.check_target(ts):
+            return
         sig = strategy.evaluate(df, self.cfg["strategy"])
 
         pos = self.positions.get(symbol)
@@ -72,6 +74,39 @@ class Engine:
                f"| score {sig.score}/4 : {', '.join(sig.reasons)}")
         log.info(msg)
         self.notify(msg)
+
+    def gain(self) -> float:
+        return self.equity() - self.risk.state.cycle_start_equity
+
+    def check_target(self, ts) -> bool:
+        """Objectif de gain atteint : on vend tout, on sécurise et on s'arrête."""
+        rs, target = self.risk.state, self.cfg.get("objectif_gain", 0)
+        if rs.target_reached:
+            return True
+        if not rs.cycle_start_equity:
+            rs.cycle_start_equity = self.equity()
+        # gain net : on retire les frais et le glissement estimés de la vente de tout
+        exit_cost = sum(p.qty * self.last_prices.get(s, p.entry) * (self.cfg["fees"] + 0.001)
+                        for s, p in self.positions.items())
+        if not target or self.gain() - exit_cost < target:
+            return False
+        for s in list(self.positions):
+            self._record(s, self.positions[s], self.last_prices.get(s, self.positions[s].entry),
+                         "objectif de gain atteint", ts)
+        rs.target_reached, rs.halted = True, True
+        rs.halt_reason = f"objectif de {target:.0f} $ atteint"
+        msg = (f"🎯 OBJECTIF ATTEINT : +{self.gain():.2f} $ de gain (capital {self.equity():.2f} $). "
+               f"Tout est vendu, l'agent s'arrête. Relancez-le pour un nouveau cycle.")
+        log.info(msg)
+        self.notify(msg)
+        return True
+
+    def start_new_cycle(self) -> None:
+        rs = self.risk.state
+        rs.cycle_start_equity = self.equity()
+        rs.peak_equity = rs.cycle_start_equity
+        rs.target_reached = False
+        rs.halted, rs.halt_reason = False, ""
 
     def _record(self, symbol, pos: Position, price, reason, ts, sell=True):
         if sell:

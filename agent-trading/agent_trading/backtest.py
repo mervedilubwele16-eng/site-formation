@@ -25,9 +25,11 @@ def run(cfg: dict, data: dict[str, pd.DataFrame]) -> dict:
                 eng.on_bar(s, df.iloc[: i + 1])
         eng.risk.tick_cooldowns()
         curve.append((ts, eng.equity()))
+        if eng.risk.state.target_reached:
+            break
     # clôture des positions restantes pour le bilan
     for s in list(eng.positions):
-        eng._record(s, eng.positions[s], eng.last_prices[s], "fin du backtest", index[-1])
+        eng._record(s, eng.positions[s], eng.last_prices[s], "fin du backtest", curve[-1][0])
     equity = pd.Series([v for _, v in curve], index=[t for t, _ in curve])
     return summarize(cfg, equity, eng.trades, enriched)
 
@@ -52,6 +54,7 @@ def summarize(cfg, equity: pd.Series, trades: list, data: dict) -> dict:
         "drawdown_max": float(dd),
         "sharpe": float(sharpe),
         "nb_trades": len(trades),
+        "objectif_atteint": bool(trades) and trades[-1]["reason"] == "objectif de gain atteint",
         "taux_reussite": len(wins) / len(trades) if trades else 0.0,
         "profit_factor": gross_win / gross_loss if gross_loss else float("inf"),
         "trades": trades,
@@ -70,5 +73,6 @@ def print_report(res: dict) -> None:
     print(f"Nombre de trades     : {res['nb_trades']}")
     print(f"Taux de réussite     : {res['taux_reussite']:.1%}")
     print(f"Profit factor        : {res['profit_factor']:.2f}")
+    print(f"Objectif de gain     : {'ATTEINT — agent arrêté' if res['objectif_atteint'] else 'non atteint'}")
     print("============================================")
     print("Rappel : les performances passées ne garantissent pas les résultats futurs.\n")

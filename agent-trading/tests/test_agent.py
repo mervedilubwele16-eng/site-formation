@@ -88,5 +88,40 @@ class TestEngine(unittest.TestCase):
         self.assertAlmostEqual(b.get_cash(), 1000 - 100 * 0.001 - 100 * 0.001, places=6)
 
 
+class TestObjectif(unittest.TestCase):
+    def _uptrend(self, n=800):
+        import numpy as np
+        idx = pd.date_range("2025-01-01", periods=n, freq="h", tz="UTC")
+        rng = np.random.default_rng(1)
+        close = pd.Series(100 * np.exp(np.cumsum(0.002 + 0.004 * rng.standard_normal(n))), index=idx)
+        return pd.DataFrame({"open": close.shift(1).fillna(100), "high": close * 1.003,
+                             "low": close * 0.997, "close": close, "volume": 1.0,
+                             "close_time": idx + pd.Timedelta(minutes=59)})
+
+    def test_stops_when_target_reached(self):
+        cfg = load_config(None)
+        cfg["objectif_gain"] = 20
+        res = backtest.run(cfg, {"AAA": self._uptrend()})
+        self.assertTrue(res["objectif_atteint"])
+        self.assertGreaterEqual(res["capital_final"] - 1000, 20)
+        self.assertLess(len(res["equity"]), 800 - strategy.warmup(cfg["strategy"]))  # arrêt avant la fin
+
+    def test_target_disabled_with_zero(self):
+        cfg = load_config(None)
+        cfg["objectif_gain"] = 0
+        res = backtest.run(cfg, {"AAA": self._uptrend()})
+        self.assertFalse(res["objectif_atteint"])
+
+    def test_new_cycle_after_restart(self):
+        cfg = load_config(None)
+        eng = Engine(cfg, PaperBroker(1500, cfg["fees"]),
+                     RiskState(peak_equity=1500, cycle_start_equity=1000, target_reached=True, halted=True))
+        eng.start_new_cycle()
+        st = eng.risk.state
+        self.assertFalse(st.target_reached or st.halted)
+        self.assertEqual(st.cycle_start_equity, 1500)
+        self.assertEqual(eng.gain(), 0)
+
+
 if __name__ == "__main__":
     unittest.main()

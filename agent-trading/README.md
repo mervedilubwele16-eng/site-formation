@@ -30,6 +30,13 @@ et surtout **protège votre capital** grâce à un gestionnaire de risque qui a 
 | Marché trop agité | aucun achat si la volatilité dépasse 8 % |
 | Après un stop-loss | pause de 3 bougies sur ce marché (évite la « vengeance ») |
 
+**Objectif de gain : 12 000 $**
+
+Quand le gain du cycle atteint `objectif_gain` (12 000 $ par défaut, frais de vente compris), l'agent
+**vend toutes ses positions, sécurise le gain, vous prévient et s'arrête**. Quand vous le relancez,
+un **nouveau cycle** commence à partir du capital actuel : il visera à nouveau +12 000 $, puis s'arrêtera encore.
+Le montant se change dans `config.yaml` (`objectif_gain`) ; mettez `0` pour désactiver.
+
 Le programme refuse aussi une configuration trop risquée (plus de 3 % de risque par trade).
 
 ## Démarrage rapide sous Windows
@@ -110,5 +117,5 @@ agent_trading/
   agent.py       boucle 24h/24, sauvegarde, notifications
   backtest.py    test sur l'historique
   data.py        données de marché
-tests/           11 tests automatiques : python -m unittest discover -s tests
+tests/           14 tests automatiques : python -m unittest discover -s tests
 ```

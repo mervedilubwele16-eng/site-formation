@@ -26,6 +26,8 @@ class RiskState:
     halted: bool = False
     halt_reason: str = ""
     cooldown: dict = field(default_factory=dict)   # symbol -> barres restantes
+    cycle_start_equity: float = 0.0                # capital au début du cycle en cours
+    target_reached: bool = False
 
 
 class RiskManager:
