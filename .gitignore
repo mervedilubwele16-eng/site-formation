@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+.env
+etat_agent.json
+etat_agent.tmp
+historique_trades.jsonl
+agent.log

@@ -1,0 +1,29 @@
+# Configuration de l'agent de trading
+# Commencez TOUJOURS en mode "paper" (simulation) pendant plusieurs semaines.
+mode: paper
+symbols: [BTCUSDT, ETHUSDT]
+interval: 1h            # 15m, 1h, 4h, 1d
+loop_seconds: 300       # l'agent vérifie le marché toutes les 5 minutes
+capital_initial: 1000   # capital fictif pour la simulation (USDT)
+fees: 0.001
+
+strategy:
+  ema_fast: 20
+  ema_slow: 50
+  ema_trend: 200
+  rsi_period: 14
+  rsi_max_entry: 70
+  atr_period: 14
+  min_score: 3
+
+risk:
+  risk_per_trade: 0.01        # 1 % du capital maximum perdu par trade
+  stop_atr_mult: 2.0
+  take_profit_atr_mult: 4.0
+  trailing_atr_mult: 2.5
+  max_position_pct: 0.25
+  max_open_positions: 2
+  max_daily_loss: 0.03        # pause jusqu'au lendemain après -3 % sur la journée
+  max_drawdown: 0.15          # arrêt complet après -15 % depuis le plus haut
+  max_volatility_pct: 0.08
+  cooldown_bars: 3
