@@ -32,6 +32,14 @@ et surtout **protège votre capital** grâce à un gestionnaire de risque qui a 
 
 Le programme refuse aussi une configuration trop risquée (plus de 3 % de risque par trade).
 
+## Démarrage rapide sous Windows
+
+1. Installez Python depuis https://www.python.org/downloads (cochez **« Add Python to PATH »**).
+2. Double-cliquez sur `1-installer.bat` (une seule fois).
+3. Double-cliquez sur `2-tester.bat` pour voir les résultats de la stratégie sur les derniers mois.
+4. Double-cliquez sur `3-lancer-simulation.bat` et laissez la fenêtre ouverte.
+5. `4-voir-statut.bat` affiche le capital et les positions à tout moment.
+
 ## Installation
 
 ```bash
