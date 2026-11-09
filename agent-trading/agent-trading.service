@@ -1,0 +1,17 @@
+# Service systemd pour faire tourner l'agent 24h/24 sur un serveur Linux (VPS).
+# Installation : sudo cp agent-trading.service /etc/systemd/system/
+#                sudo systemctl enable --now agent-trading
+[Unit]
+Description=Agent de trading automatique
+After=network-online.target
+
+[Service]
+WorkingDirectory=/opt/agent-trading
+EnvironmentFile=/opt/agent-trading/.env
+ExecStart=/usr/bin/python3 -m agent_trading run
+Restart=always
+RestartSec=30
+User=trader
+
+[Install]
+WantedBy=multi-user.target
