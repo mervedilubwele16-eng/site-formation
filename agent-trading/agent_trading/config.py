@@ -4,8 +4,6 @@ from __future__ import annotations
 import copy
 from pathlib import Path
 
-import yaml
-
 DEFAULTS = {
     "mode": "paper",              # "paper" (simulation) ou "live" (argent réel)
     "exchange": "binance",
@@ -51,11 +49,67 @@ def _merge(base: dict, override: dict) -> dict:
     return out
 
 
+def _scalar(v: str):
+    v = v.strip()
+    if v.startswith("[") and v.endswith("]"):
+        return [_scalar(x) for x in v[1:-1].split(",") if x.strip()]
+    if len(v) >= 2 and v[0] == v[-1] and v[0] in "'\"":
+        return v[1:-1]
+    low = v.lower()
+    if low in ("true", "yes", "oui"):
+        return True
+    if low in ("false", "no", "non"):
+        return False
+    if low in ("", "null", "none", "~"):
+        return None
+    for cast in (int, float):
+        try:
+            return cast(v)
+        except ValueError:
+            pass
+    return v
+
+
+def _strip_comment(line: str) -> str:
+    quote = None
+    for i, c in enumerate(line):
+        if c in "'\"":
+            quote = None if quote == c else (quote or c)
+        elif c == "#" and quote is None and (i == 0 or line[i - 1] in " \t"):
+            return line[:i]
+    return line
+
+
+def parse_yaml(text: str) -> dict:
+    """Lecteur YAML simplifié (clés, sous-sections, listes [a, b], commentaires).
+    Suffisant pour config.yaml, sans dépendance externe à compiler."""
+    root: dict = {}
+    stack = [(-1, root)]
+    for n, raw in enumerate(text.splitlines(), 1):
+        line = _strip_comment(raw).rstrip()
+        if not line.strip():
+            continue
+        indent = len(line) - len(line.lstrip(" "))
+        key, sep, value = line.strip().partition(":")
+        if not sep:
+            raise ValueError(f"config.yaml ligne {n} : « clé: valeur » attendu, trouvé « {raw.strip()} »")
+        while indent <= stack[-1][0]:
+            stack.pop()
+        parent = stack[-1][1]
+        if value.strip():
+            parent[key.strip()] = _scalar(value)
+        else:
+            child: dict = {}
+            parent[key.strip()] = child
+            stack.append((indent, child))
+    return root
+
+
 def load_config(path: str | Path | None = None) -> dict:
     cfg = copy.deepcopy(DEFAULTS)
     if path and Path(path).exists():
         with open(path, encoding="utf-8") as f:
-            cfg = _merge(cfg, yaml.safe_load(f) or {})
+            cfg = _merge(cfg, parse_yaml(f.read()))
     validate(cfg)
     return cfg
 

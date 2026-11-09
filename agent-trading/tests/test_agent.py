@@ -4,7 +4,7 @@ import pandas as pd
 
 from agent_trading import backtest, data, strategy
 from agent_trading.broker import PaperBroker
-from agent_trading.config import DEFAULTS, load_config, validate
+from agent_trading.config import DEFAULTS, load_config, parse_yaml, validate
 from agent_trading.engine import Engine
 from agent_trading.risk import Position, RiskManager, RiskState
 
@@ -121,6 +121,20 @@ class TestObjectif(unittest.TestCase):
         self.assertFalse(st.target_reached or st.halted)
         self.assertEqual(st.cycle_start_equity, 1500)
         self.assertEqual(eng.gain(), 0)
+
+
+class TestConfig(unittest.TestCase):
+    def test_reads_config_without_pyyaml(self):
+        cfg = parse_yaml("mode: paper  # commentaire\nsymbols: [BTCUSDT, ETHUSDT]\n"
+                         "objectif_gain: 12000\nrisk:\n  risk_per_trade: 0.01\n  max_drawdown: 0.15\n")
+        self.assertEqual(cfg["symbols"], ["BTCUSDT", "ETHUSDT"])
+        self.assertEqual(cfg["objectif_gain"], 12000)
+        self.assertEqual(cfg["risk"]["risk_per_trade"], 0.01)
+
+    def test_shipped_config_loads(self):
+        import os
+        path = os.path.join(os.path.dirname(__file__), "..", "config.yaml")
+        self.assertEqual(load_config(path)["objectif_gain"], 12000)
 
 
 if __name__ == "__main__":
