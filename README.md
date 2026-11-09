@@ -9,3 +9,5 @@ Dossier [`voix-off/`](voix-off/) :
 - `script-voix-off.md` : texte, méthode, résultats et mode d'emploi
 - `generer_voix_off.py` : programme de génération locale avec contrôle de l'articulation
 - `telecharger_modeles.sh` : téléchargement des modèles nécessaires
+- `allonger_pauses.py` : allonge les pauses entre les phrases d'une voix off
+- `module-00/` : voix off des leçons du module 00 de SLA (voix Perle) et leurs scripts
