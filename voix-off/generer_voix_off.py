@@ -56,13 +56,23 @@ SCRIPT = [
     ("Il prend vie quand vous le mettez en pratique.", 1.00),
     ("Alors, prêt à faire ce premier pas ?", 0.60),
     ("Rejoignez-nous,", 0.35),
-    ("et commencez à construire la suite, dès maintenant.", 0.80),
+    ("et commencez à construire la suite.", 0.35),
+    ("Dès maintenant.", 0.80),
 ]
 
 # Réécritures phonétiques : le texte affiché reste correct, seul ce qui est
 # envoyé au moteur change. Ajoutez ici les mots mal prononcés.
+# Chaque règle a été retenue par le banc d'essai (4 prises par variante,
+# notées par deux modèles de reconnaissance) :
 PRONONCIATION = {
-    # rien d'obligatoire pour l'instant ; exemple : "Rejoignez-nous": "Rejoignez nous",
+    # sans micro-pause, « dessine » était compris « décide » (7 erreurs -> 0)
+    "un métier qui se dessine": "un métier, qui se déssine",
+    # « à demain, » était parfois compris « à deux mains » (4 erreurs -> 2)
+    "repousse à demain,": "repousse à demain.",
+    # « cases » était entendu « casses » : le z final se dévoisait (2 -> 0)
+    "des cases": "des cazes",
+    # « contenus clairs » était entendu « comptes nucléaires » (2 -> 0)
+    "des contenus clairs": "des contenus, clairs",
 }
 
 VOIX = {
@@ -115,21 +125,32 @@ def fondu(x, sr, ms=12):
     return x
 
 
-def synthetiser(tts, sid, asr=None, prises=1, bavard=False):
-    """Synthétise chaque phrase. Avec `asr` et prises > 1, génère plusieurs
-    prises par phrase et garde celle que la reconnaissance vocale comprend le
-    mieux (à égalité : celle dont la durée est la plus proche de la médiane,
-    pour écarter les prises trop pressées ou trop traînantes)."""
+def synthetiser(tts, sid, juges=(), prises=1, bavard=False):
+    """Synthétise chaque phrase. Avec des `juges` (modèles de reconnaissance)
+    et prises > 1, génère plusieurs prises par phrase et garde celle que les
+    juges comprennent le mieux (somme de leurs erreurs). Chaque prise est écoutée EN CONTEXTE, à la suite de la phrase
+    précédente déjà choisie, comme dans l'enchaînement final. À égalité, on
+    garde la prise dont la durée est la plus proche de la médiane, pour écarter
+    les prises trop pressées ou trop traînantes."""
     sr = tts.sample_rate
     phrases = []
     for texte, pause in SCRIPT:
+        if phrases:
+            t_prec, x_prec, p_prec = phrases[-1]
+            contexte = np.concatenate([x_prec, np.zeros(int(p_prec * sr), np.float32)])
+            ref = t_prec + " " + texte
+        else:
+            contexte, ref = np.zeros(0, np.float32), texte
         candidates = []
         for _ in range(max(1, prises)):
             audio = tts.generate(preparer(texte), sid=sid, speed=1.0)
             x = np.asarray(audio.samples, dtype=np.float32)
             x = fondu(rogner_silence(x, sr), sr)
-            e = wer(texte, transcrire(asr, x, sr))[0] if asr and prises > 1 else 0
-            candidates.append((e, x))
+            e = 0
+            if prises > 1:
+                ecoute = np.concatenate([contexte, x])
+                e = sum(wer(ref, transcrire(j, ecoute, sr))[0] for j in juges)
+            candidates.append((int(e), x))
         med = np.median([len(x) for _, x in candidates])
         e, x = min(candidates, key=lambda c: (c[0], abs(len(c[1]) - med)))
         if bavard and prises > 1:
@@ -163,9 +184,28 @@ def masteriser(wav_in, sortie):
 # ---------------------------- Vérification ----------------------------------
 def normaliser(t):
     t = t.lower().replace("’", "'")
+    # homophones sur plusieurs mots : liaison « c'est ouvrir » = « cet ouvrir »,
+    # « quand vous » = « qu'en vous »
+    t = re.sub(r"\bcet\b", "c'est", t)
+    t = re.sub(r"\bquand\b", "qu'en", t)
     t = re.sub(r"[^\w'\s-]", " ", t)
     t = t.replace("-", " ").replace("'", " ")
-    return t.split()
+    return [homophone(m) for m in t.split()]
+
+
+def homophone(m):
+    """Ramène un mot à une forme « sonore » : en français, beaucoup de finales
+    s'écrivent différemment mais se prononcent pareil (commencez / commencer,
+    prêt / prêts). Ce ne sont pas des fautes d'articulation."""
+    m = {"à": "a", "dès": "des", "dés": "des", "où": "ou"}.get(m, m)
+    m = re.sub(r"(ez|er|ées|ée|és|ais|ait|aient)$", "é", m)
+    if len(m) > 3:
+        m = re.sub(r"(?<=[aeiouéèêy][stx])s$", "", m)   # prêts -> prêt
+        m = re.sub(r"(?<=[aeiouéèêy])[stx]$", "", m)    # prêt -> prê
+    m = re.sub(r"^(\w{1,2}[iu])[et]$", r"\1", m)    # vie / vit -> vi
+    if len(m) > 3 and m.endswith("e") and not m.endswith("ée"):
+        m = m[:-1]                                      # seule -> seul, vie -> vi
+    return m
 
 
 def wer(ref, hyp):
@@ -188,10 +228,9 @@ def creer_asr(modeles):
         language="fr", task="transcribe", num_threads=4)
 
 
-def creer_juge(modeles):
-    """Second modèle de reconnaissance (Zipformer français, architecture
-    différente de Whisper) : il sert de juge neutre, pour vérifier que la
-    sélection des prises par Whisper améliore vraiment l'intelligibilité."""
+def creer_zipformer(modeles):
+    """Zipformer français : plus « acoustique » que Whisper, dont le fort
+    modèle de langue devine parfois un mot mal articulé (cases / casses)."""
     d = os.path.join(modeles, "sherpa-onnx-streaming-zipformer-fr-2023-04-14")
     f = lambda n: os.path.join(d, f"{n}-epoch-29-avg-9-with-averaged-model.int8.onnx")
     return sherpa_onnx.OnlineRecognizer.from_transducer(
@@ -199,12 +238,28 @@ def creer_juge(modeles):
         decoder=f("decoder"), joiner=f("joiner"), num_threads=4)
 
 
+def creer_parakeet(modeles):
+    """Parakeet TDT v3 (NVIDIA, multilingue) : une troisième famille de
+    modèle, JAMAIS utilisée pour choisir les prises. C'est le juge final
+    indépendant."""
+    d = os.path.join(modeles, "sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8")
+    return sherpa_onnx.OfflineRecognizer.from_transducer(
+        encoder=os.path.join(d, "encoder.int8.onnx"),
+        decoder=os.path.join(d, "decoder.int8.onnx"),
+        joiner=os.path.join(d, "joiner.int8.onnx"),
+        tokens=os.path.join(d, "tokens.txt"),
+        model_type="nemo_transducer", num_threads=4)
+
+
 def transcrire(asr, x, sr):
     import math
     # les modèles de reconnaissance attendent du 16 kHz
     n = int(math.ceil(len(x) * 16000 / sr))
     x16 = np.interp(np.linspace(0, len(x) - 1, n), np.arange(len(x)), x)
-    x16 = np.pad(x16, 8000).astype(np.float32)  # 0,5 s de silence autour
+    # silence autour : 0,5 s avant ; après, 0,5 s pour Whisper et 1,5 s pour le
+    # modèle en flux, qui sinon tronque la dernière syllabe
+    fin = 24000 if isinstance(asr, sherpa_onnx.OnlineRecognizer) else 8000
+    x16 = np.pad(x16, (8000, fin)).astype(np.float32)
     s = asr.create_stream()
     s.accept_waveform(16000, x16)
     if isinstance(asr, sherpa_onnx.OnlineRecognizer):
@@ -217,14 +272,28 @@ def transcrire(asr, x, sr):
 
 
 def verifier(asr, phrases, sr, bavard=True):
+    """Écoute la voix off en continu, comme un auditeur, et renvoie le taux
+    d'erreur de mots. Le modèle en flux écoute tout d'un trait ; les autres,
+    limités à ~30 s, écoutent paragraphe par paragraphe. (Isoler les phrases
+    pénalise injustement les voyelles en début de phrase.)"""
+    tout_d_un_trait = isinstance(asr, sherpa_onnx.OnlineRecognizer)
     erreurs = total = 0
-    for texte, x, _ in phrases:
-        hyp = transcrire(asr, x, sr)
-        e, n_mots = wer(texte, hyp)
+    paragraphe = []
+    for i, (texte, x, pause) in enumerate(phrases):
+        paragraphe.append((texte, x, pause))
+        fin = i == len(phrases) - 1
+        if not fin and (tout_d_un_trait or pause < 0.9):
+            continue
+        ref = " ".join(t for t, _, _ in paragraphe)
+        audio = np.concatenate(sum(([x, np.zeros(int(p * sr), np.float32)]
+                                    for _, x, p in paragraphe), []))
+        hyp = transcrire(asr, audio, sr)
+        e, n_mots = wer(ref, hyp)
         erreurs += e
         total += n_mots
         if bavard and e:
-            print(f"  ✗ {texte!r}\n    entendu : {hyp!r}")
+            print(f"  ✗ {ref!r}\n    entendu : {hyp!r}")
+        paragraphe = []
     return erreurs / total
 
 
@@ -232,30 +301,31 @@ def main():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--modeles", required=True)
-    p.add_argument("--voix", default="upmc", choices=VOIX)
-    p.add_argument("--locuteur", type=int, default=1, help="upmc : 1 = Pierre")
-    p.add_argument("--vitesse", type=float, default=1.1,
+    p.add_argument("--voix", default="tom", choices=VOIX)
+    p.add_argument("--locuteur", type=int, default=0, help="upmc : 1 = Pierre ; tom et gilles : 0")
+    p.add_argument("--vitesse", type=float, default=1.2,
                    help="length_scale : >1 ralentit (articulation plus nette)")
     p.add_argument("--bruit", type=float, default=0.5)
     p.add_argument("--bruit-w", type=float, default=0.6)
     p.add_argument("--sortie", default="voix-off.mp3")
     p.add_argument("--prises", type=int, default=1,
-                   help="prises par phrase ; la mieux comprise par Whisper est gardée")
+                   help="prises par phrase ; la mieux comprise (Whisper + Zipformer) est gardée")
     p.add_argument("--verifier", action="store_true")
     a = p.parse_args()
 
     tts = creer_tts(a.modeles, a.voix, a.bruit, a.bruit_w, a.vitesse)
-    asr = creer_asr(a.modeles) if (a.verifier or a.prises > 1) else None
-    phrases, sr = synthetiser(tts, a.locuteur, asr, a.prises, bavard=True)
+    juges = [creer_asr(a.modeles), creer_zipformer(a.modeles)] \
+        if (a.verifier or a.prises > 1) else []
+    phrases, sr = synthetiser(tts, a.locuteur, juges, a.prises, bavard=True)
     with tempfile.NamedTemporaryFile(suffix=".wav") as tmp:
         sf.write(tmp.name, assembler(phrases, sr), sr)
         masteriser(tmp.name, a.sortie)
     print(f"Écrit : {a.sortie}")
     if a.verifier:
-        taux = verifier(asr, phrases, sr)
-        print(f"Taux d'erreur de mots (Whisper) : {taux:.1%}")
-        taux = verifier(creer_juge(a.modeles), phrases, sr)
-        print(f"Taux d'erreur de mots (juge indépendant Zipformer) : {taux:.1%}")
+        for nom, asr in [("Whisper, a servi au choix", juges[0]),
+                         ("Zipformer, a servi au choix", juges[1]),
+                         ("Parakeet, juge indépendant", creer_parakeet(a.modeles))]:
+            print(f"Taux d'erreur de mots ({nom}) : {verifier(asr, phrases, sr):.1%}")
 
 
 if __name__ == "__main__":
