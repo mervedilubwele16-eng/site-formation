@@ -26,7 +26,7 @@ class TestRisk(unittest.TestCase):
 
     def test_drawdown_kill_switch(self):
         self.rm.update_equity(1000, "2025-01-01")
-        self.rm.update_equity(840, "2025-01-02")
+        self.rm.update_equity(740, "2025-01-02")
         self.assertTrue(self.rm.state.halted)
         ok, why = self.rm.can_open("BTCUSDT", 100, 1, 0)
         self.assertFalse(ok)
@@ -66,6 +66,8 @@ class TestRisk(unittest.TestCase):
 class TestEngine(unittest.TestCase):
     def test_backtest_runs_and_respects_drawdown(self):
         cfg = load_config(None)
+        cfg["strategy"]["type"] = "classique"
+        cfg["risk"]["max_drawdown"] = 0.15
         res = backtest.run(cfg, {"AAA": data.synthetic(3000, seed=3)})
         self.assertGreater(res["nb_trades"], 0)
         # le coupe-circuit à 15 % + un écart d'exécution raisonnable
@@ -73,6 +75,7 @@ class TestEngine(unittest.TestCase):
 
     def test_no_buy_in_downtrend(self):
         cfg = load_config(None)
+        cfg["strategy"]["type"] = "classique"
         idx = pd.date_range("2025-01-01", periods=400, freq="h", tz="UTC")
         close = pd.Series([1000 - i for i in range(400)], index=idx, dtype=float)
         df = pd.DataFrame({"open": close + 0.5, "high": close + 1, "low": close - 1, "close": close,
@@ -100,6 +103,7 @@ class TestObjectif(unittest.TestCase):
 
     def test_stops_when_target_reached(self):
         cfg = load_config(None)
+        cfg["strategy"]["type"] = "classique"
         cfg["objectif_gain"] = 20
         res = backtest.run(cfg, {"AAA": self._uptrend()})
         self.assertTrue(res["objectif_atteint"])
@@ -108,6 +112,7 @@ class TestObjectif(unittest.TestCase):
 
     def test_target_disabled_with_zero(self):
         cfg = load_config(None)
+        cfg["strategy"]["type"] = "classique"
         cfg["objectif_gain"] = 0
         res = backtest.run(cfg, {"AAA": self._uptrend()})
         self.assertFalse(res["objectif_atteint"])
@@ -121,6 +126,47 @@ class TestObjectif(unittest.TestCase):
         self.assertFalse(st.target_reached or st.halted)
         self.assertEqual(st.cycle_start_equity, 1500)
         self.assertEqual(eng.gain(), 0)
+
+
+def _daily(prices):
+    import numpy as np
+    idx = pd.date_range("2020-01-01", periods=len(prices), freq="D", tz="UTC")
+    c = pd.Series(prices, index=idx, dtype=float)
+    return pd.DataFrame({"open": c.shift(1).fillna(c.iloc[0]), "high": c * 1.01, "low": c * 0.99,
+                         "close": c, "volume": 1.0, "close_time": idx + pd.Timedelta(hours=23)})
+
+
+class TestTendance(unittest.TestCase):
+    def setUp(self):
+        import numpy as np
+        self.cfg = load_config(None)
+        rng = np.random.default_rng(0)
+        up = 100 * np.exp(np.cumsum(0.004 + 0.01 * rng.standard_normal(300)))
+        down = up[-1] * np.exp(np.cumsum(-0.006 + 0.01 * rng.standard_normal(200)))
+        self.df = _daily(list(up) + list(down))
+
+    def test_invested_in_uptrend_cash_in_downtrend(self):
+        d = strategy.add_indicators(self.df, self.cfg["strategy"])
+        self.assertGreater(strategy.evaluate_trend(d.iloc[:300]).exposure, 0.1)
+        self.assertEqual(strategy.evaluate_trend(d).exposure, 0.0)
+
+    def test_exposure_never_exceeds_100_percent(self):
+        d = strategy.add_indicators(self.df, self.cfg["strategy"])
+        self.assertLessEqual(d["exposition"].max(), 1.0)
+        self.assertGreaterEqual(d["exposition"].min(), 0.0)
+
+    def test_backtest_exits_before_crash_bottom(self):
+        res = backtest.run(self.cfg, {"BTCUSDT": self.df})
+        crash = self.df["close"].iloc[-1] / self.df["close"].iloc[299] - 1
+        self.assertLess(crash, -0.5)
+        self.assertGreater(res["drawdown_max"], -0.25)     # l'agent est sorti bien avant
+        self.assertGreater(res["nb_trades"], 0)
+
+    def test_no_lookahead(self):
+        """Les décisions d'un jour ne doivent pas changer si on ajoute des jours futurs."""
+        a = strategy.add_indicators(self.df.iloc[:350], self.cfg["strategy"])["exposition"]
+        b = strategy.add_indicators(self.df, self.cfg["strategy"])["exposition"].iloc[:350]
+        pd.testing.assert_series_equal(a, b)
 
 
 class TestConfig(unittest.TestCase):

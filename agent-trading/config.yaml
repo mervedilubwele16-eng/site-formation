@@ -1,30 +1,25 @@
 # Configuration de l'agent de trading
 # Commencez TOUJOURS en mode "paper" (simulation) pendant plusieurs semaines.
 mode: paper
-symbols: [BTCUSDT, ETHUSDT]
-interval: 1h            # 15m, 1h, 4h, 1d
-loop_seconds: 300       # l'agent vérifie le marché toutes les 5 minutes
+symbols: [BTCUSDT]
+interval: 1d            # bougies d'une journée : la stratégie a été validée sur ce réglage
+loop_seconds: 300       # l'agent vérifie toutes les 5 minutes s'il y a une nouvelle bougie
 capital_initial: 1000   # capital fictif pour la simulation (USDT)
 fees: 0.001
-objectif_gain: 12000   # en $ (USDT) : quand le gain atteint ce montant, l'agent vend tout et s'arrête. 0 = désactivé
+objectif_gain: 12000    # en $ (USDT) : quand le gain atteint ce montant, l'agent vend tout et s'arrête. 0 = désactivé
 
 strategy:
-  ema_fast: 20
-  ema_slow: 50
-  ema_trend: 200
-  rsi_period: 14
-  rsi_max_entry: 70
-  atr_period: 14
-  min_score: 3
+  type: tendance          # "tendance" (recommandée) ou "classique" (ancienne version, perdante)
+  sma_periods: [50, 100, 150]
+  donchian_periods: [20, 55]
+  donchian_exit_frac: 0.5
+  vol_cible: 0.20         # niveau de risque : 0.20 prudent, 0.30 modéré, 0.40 dynamique
+  vol_window: 30
+  rebalance_seuil: 0.10
+  stop_secours_atr: 6.0   # stop de secours (≈ 20 % sous le prix), utile si l'ordinateur est éteint
 
 risk:
-  risk_per_trade: 0.01        # 1 % du capital maximum perdu par trade
-  stop_atr_mult: 2.0
-  take_profit_atr_mult: 4.0
-  trailing_atr_mult: 2.5
-  max_position_pct: 0.25
-  max_open_positions: 2
-  max_daily_loss: 0.03        # pause jusqu'au lendemain après -3 % sur la journée
-  max_drawdown: 0.15          # arrêt complet après -15 % depuis le plus haut
-  max_volatility_pct: 0.08
-  cooldown_bars: 3
+  max_daily_loss: 0.05        # pause jusqu'au lendemain après -5 % sur la journée
+  max_drawdown: 0.25          # arrêt complet après -25 % depuis le plus haut
+  max_volatility_pct: 0.08    # aucun achat si le marché bouge de plus de 8 % par jour
+  cooldown_bars: 3            # 3 jours de pause après un stop de secours

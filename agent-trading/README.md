@@ -10,25 +10,51 @@ et surtout **protège votre capital** grâce à un gestionnaire de risque qui a 
 
 ## Ce que fait l'agent
 
-**Analyse : 4 signaux indépendants, l'agent n'achète que s'ils sont d'accord (au moins 3 sur 4)**
-1. Tendance de fond haussière (prix au-dessus de la moyenne mobile 200)
-2. Momentum court terme (EMA 20 au-dessus de l'EMA 50)
-3. MACD positif et en accélération
-4. RSI sain (pas d'achat sur un marché surchauffé)
+**Stratégie « tendance » (retenue après recherche sur 10 ans de prix réels du Bitcoin)**
 
-**Protection du capital (gestionnaire de risque)**
+Chaque jour, à la clôture de la bougie quotidienne, cinq signaux de tendance votent :
+- prix au-dessus de sa moyenne sur 50, 100 et 150 jours ;
+- cassure de Donchian sur 20 et 55 jours (méthode inspirée de Zarattini, Pagani & Barbon,
+  *Catching Crypto Trends*, Swiss Finance Institute, 2025).
+
+La part du capital investie = la proportion de signaux haussiers, **réduite quand le marché est agité**
+(ciblage de volatilité, 20 % par an par défaut). Quand plus aucun signal n'est haussier, l'agent vend
+tout et reste en USDT : c'est ce qui lui fait traverser les krachs avec de petites pertes.
+
+**Résultats sur données réelles (BTC/USD, frais compris)**
+
+| Année | Agent | Perte max de l'agent | Bitcoin (acheter et garder) |
+|---|---|---|---|
+| 2018 | -11,1 % | -11,3 % | -72,5 % |
+| 2019 | +51,5 % | -10,8 % | +87,5 % |
+| 2020 | +73,9 % | -7,2 % | +303,9 % |
+| 2021 | +13,7 % | -8,0 % | +57,2 % |
+| 2022 | -12,7 % | -12,8 % | -65,4 % |
+| 2023 | +24,0 % | -12,8 % | +154,3 % |
+| 2024 | +29,2 % | -12,4 % | +111,3 % |
+| 2025 | +0,8 % | -11,3 % | -7,3 % |
+| 2026 (au 9 nov.) | -0,2 % | -8,2 % | -15,3 % |
+
+De 2018 à fin 2026 : environ **+285 %** pour l'agent avec une perte maximale de **-19 %**,
+contre +459 % pour le Bitcoin avec des chutes allant jusqu'à **-77 %**.
+Les réglages ont été choisis sur 2016-2021 puis vérifiés sur 2022-2026 (période jamais vue).
+
+**Ce qu'il faut savoir honnêtement**
+- Aucune stratégie n'est infaillible. Celle-ci perd de petites sommes dans les marchés sans
+  direction (2025-2026) et gagne **moins** que le Bitcoin pendant les fortes hausses : c'est le prix
+  de la protection contre les krachs.
+- Les performances passées ne garantissent pas les résultats futurs.
+- L'ancienne stratégie (`type: classique`, bougies 1 h) a été abandonnée : -15 % en backtest réel.
+
+**Protection du capital**
 | Protection | Réglage par défaut |
 |---|---|
-| Perte maximale par trade | 1 % du capital (taille de position calculée automatiquement) |
-| Stop-loss | 2 × ATR sous le prix d'entrée, **posé aussi sur Binance** en mode réel |
-| Prise de bénéfice | 4 × ATR (gain visé 2 fois supérieur au risque) |
-| Stop suiveur | remonte avec le prix pour sécuriser les gains, ne descend jamais |
-| Taille maximale d'une position | 25 % du capital |
-| Positions simultanées | 2 maximum |
-| Perte journalière | pause automatique jusqu'au lendemain à -3 % |
-| Coupe-circuit | arrêt complet et vente de tout à -15 % depuis le plus haut |
-| Marché trop agité | aucun achat si la volatilité dépasse 8 % |
-| Après un stop-loss | pause de 3 bougies sur ce marché (évite la « vengeance ») |
+| Sortie complète | dès que plus aucun signal de tendance n'est haussier |
+| Taille de position | ajustée à la volatilité (jamais plus de 100 % du capital, jamais d'emprunt) |
+| Stop de secours | ≈ 6 × ATR sous le prix, **posé aussi sur Binance** en mode réel |
+| Perte journalière | pause jusqu'au lendemain à -5 % |
+| Coupe-circuit | arrêt complet et vente de tout à -25 % depuis le plus haut |
+| Marché trop agité | aucun achat si le prix bouge de plus de 8 % par jour |
 
 **Objectif de gain : 12 000 $**
 
@@ -57,8 +83,11 @@ pip install -r requirements.txt
 ## Utilisation
 
 ```bash
-# 1. Tester la stratégie sur l'historique réel (environ 7 mois en bougies 1h)
+# 1. Tester la stratégie sur l'historique réel de Binance (depuis 2017)
 python -m agent_trading backtest --bars 5000
+
+#    ou à partir d'une date
+python -m agent_trading backtest --bars 5000 --debut 2022-01-01
 
 #    ou hors ligne, sur un marché simulé
 python -m agent_trading backtest --demo
@@ -99,7 +128,7 @@ renseignez `TELEGRAM_TOKEN` et `TELEGRAM_CHAT_ID` dans `.env`. Vous recevrez cha
 3. Mettez un petit montant sur le compte, puis lancez : `python -m agent_trading run --live`.
    L'agent vous demandera de taper « JE COMPRENDS LES RISQUES » pour confirmer.
 
-## Résultat d'exemple (marché simulé, `--demo`)
+## Résultat d'exemple de l'ancienne stratégie (marché simulé, `--demo`)
 
 Sur un marché simulé qui chute de 62 %, l'agent finit à **-6,7 %** et sa perte maximale reste sous
 le coupe-circuit de 15 % : c'est la gestion du risque qui fait son travail. Ce test montre aussi qu'il
@@ -117,5 +146,12 @@ agent_trading/
   agent.py       boucle 24h/24, sauvegarde, notifications
   backtest.py    test sur l'historique
   data.py        données de marché
-tests/           14 tests automatiques : python -m unittest discover -s tests
+tests/           20 tests automatiques : python -m unittest discover -s tests
 ```
+
+## Sources de la recherche
+
+- Zarattini, Pagani & Barbon, *Catching Crypto Trends* (2025) : https://abarbon.com/papers/catching-crypto-trends
+- Grayscale Research, *The Trend is Your Friend* : https://research.grayscale.com/reports/the-trend-is-your-friend-managing-bitcoins-volatility-with-momentum-signals
+- Quantpedia, *Revisiting Trend-following and Mean-reversion Strategies in Bitcoin* : https://quantpedia.com/revisiting-trend-following-and-mean-reversion-strategies-in-bitcoin/
+- Données : Bitstamp BTC/USD 1 minute, https://github.com/ff137/bitstamp-btcusd-minute-data

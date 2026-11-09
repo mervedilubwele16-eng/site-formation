@@ -17,6 +17,8 @@ def main(argv=None):
     b = sub.add_parser("backtest", help="tester la stratégie sur l'historique")
     b.add_argument("--bars", type=int, default=5000, help="nombre de bougies d'historique")
     b.add_argument("--demo", action="store_true", help="utiliser un marché simulé (hors ligne)")
+    b.add_argument("--fichier", help="fichier CSV de bougies (colonnes open,high,low,close) au lieu de Binance")
+    b.add_argument("--debut", help="date de début du test, ex. 2022-01-01")
 
     sub.add_parser("analyse", help="afficher l'analyse actuelle du marché, sans trader")
 
@@ -28,12 +30,17 @@ def main(argv=None):
     cfg = load_config(args.config)
 
     if args.cmd == "backtest":
-        if args.demo:
+        if args.fichier:
+            import pandas as pd
+            df = pd.read_csv(args.fichier, index_col=0, parse_dates=True)
+            cfg["symbols"] = cfg["symbols"][:1]
+            series = {cfg["symbols"][0]: df}
+        elif args.demo:
             series = {s: data.synthetic(args.bars, seed=i + 1, start_price=100 * (i + 1))
                       for i, s in enumerate(cfg["symbols"])}
         else:
             series = {s: data.fetch_history(s, cfg["interval"], args.bars) for s in cfg["symbols"]}
-        res = backtest.run(cfg, series)
+        res = backtest.run(cfg, series, debut=args.debut)
         backtest.print_report(res)
         for t in res["trades"][-10:]:
             print(f"  {t['symbol']:9} {t['exit_time'][:16]}  {t['pct']:+7.2%}  {t['reason']}")

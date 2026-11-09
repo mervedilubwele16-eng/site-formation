@@ -34,6 +34,8 @@ class Engine:
         self.risk.update_equity(self.equity(), str(ts.date()))
         if self.check_target(ts):
             return
+        if self.cfg["strategy"].get("type", "classique") == "tendance":
+            return self._on_bar_trend(symbol, df, bar, ts)
         sig = strategy.evaluate(df, self.cfg["strategy"])
 
         pos = self.positions.get(symbol)
@@ -75,6 +77,79 @@ class Engine:
         log.info(msg)
         self.notify(msg)
 
+    def _on_bar_trend(self, symbol: str, df: pd.DataFrame, bar, ts) -> None:
+        p = self.cfg["strategy"]
+        sig = strategy.evaluate_trend(df)
+        price = sig.price
+        pos = self.positions.get(symbol)
+
+        # 1. stop de secours touché ? (plateforme en live, plus bas de la bougie en simulation)
+        if pos:
+            if hasattr(self.broker, "stop_filled") and self.broker.stop_filled(symbol):
+                self._record(symbol, pos, pos.stop, "stop de secours (plateforme)", ts, sell=False)
+                self.risk.state.cooldown[symbol] = self.cfg["risk"]["cooldown_bars"]
+                return
+            if float(bar["low"]) <= pos.stop:
+                self._record(symbol, pos, pos.stop, "stop de secours", ts)
+                self.risk.state.cooldown[symbol] = self.cfg["risk"]["cooldown_bars"]
+                return
+
+        # 2. part du capital visée
+        target = sig.exposure
+        rs = self.risk.state
+        if rs.halted or self.risk.state.cooldown.get(symbol, 0) > 0:
+            target = 0.0
+        if sig.atr / price > self.cfg["risk"]["max_volatility_pct"]:
+            target = 0.0
+        alloc = self.equity() / len(self.cfg["symbols"])
+        current = pos.qty * price if pos else 0.0
+        wanted = alloc * target
+        gap = (wanted - current) / alloc if alloc else 0.0
+
+        if pos and target == 0.0:
+            why = rs.halt_reason if rs.halted else "plus aucun signal de tendance haussière"
+            self._record(symbol, pos, price, why, ts)
+            return
+        if abs(gap) < p["rebalance_seuil"] or abs(wanted - current) < 10:
+            if pos:   # stop de secours suiveur : il ne fait que monter
+                new_stop = price - p["stop_secours_atr"] * sig.atr
+                if new_stop > pos.stop:
+                    pos.stop = new_stop
+                    self.broker.set_stop(symbol, pos.qty, pos.stop)
+            return
+
+        if gap > 0:   # acheter
+            qty = min(wanted - current, self.broker.get_cash() * 0.99) / (price * (1 + self.cfg["fees"]))
+            if qty * price < 10:
+                return
+            filled, px = self.broker.buy(symbol, qty, price)
+            if filled <= 0:
+                return
+            if pos:
+                pos.entry = (pos.entry * pos.qty + px * filled) / (pos.qty + filled)
+                pos.qty += filled
+            else:
+                pos = Position(symbol, filled, px, price - p["stop_secours_atr"] * sig.atr,
+                               float("inf"), px, str(ts))
+                self.positions[symbol] = pos
+            pos.stop = max(pos.stop, price - p["stop_secours_atr"] * sig.atr)
+            self.broker.set_stop(symbol, pos.qty, pos.stop)
+            msg = (f"ACHAT {symbol} {filled:.6f} @ {px:.2f} → {target:.0%} du capital investi "
+                   f"| signaux : {', '.join(sig.reasons) or 'tendance haussière'}")
+        else:         # alléger
+            qty = min(pos.qty, (current - wanted) / price)
+            part = Position(symbol, qty, pos.entry, pos.stop, pos.target, pos.highest, pos.opened_at)
+            self._record(symbol, part, price, "allègement (moins de signaux / marché plus agité)", ts,
+                         remove=False)
+            pos.qty -= qty
+            if pos.qty * price < 10:
+                del self.positions[symbol]
+                return
+            self.broker.set_stop(symbol, pos.qty, pos.stop)
+            msg = f"ALLÈGEMENT {symbol} → {target:.0%} du capital investi"
+        log.info(msg)
+        self.notify(msg)
+
     def gain(self) -> float:
         return self.equity() - self.risk.state.cycle_start_equity
 
@@ -108,7 +183,7 @@ class Engine:
         rs.target_reached = False
         rs.halted, rs.halt_reason = False, ""
 
-    def _record(self, symbol, pos: Position, price, reason, ts, sell=True):
+    def _record(self, symbol, pos: Position, price, reason, ts, sell=True, remove=True):
         if sell:
             _, price = self.broker.sell(symbol, pos.qty, price)
         elif hasattr(self.broker, "cash"):
@@ -118,8 +193,9 @@ class Engine:
         self.trades.append({"symbol": symbol, "entry_time": pos.opened_at, "exit_time": str(ts),
                             "entry": pos.entry, "exit": price, "qty": pos.qty,
                             "pnl": pnl, "pct": pct, "reason": reason})
-        del self.positions[symbol]
-        self.risk.on_closed(symbol, reason)
+        if remove:
+            self.positions.pop(symbol, None)
+            self.risk.on_closed(symbol, reason)
         msg = f"VENTE {symbol} @ {price:.2f} ({pct:+.2%}, {pnl:+.2f} USDT) — {reason}"
         log.info(msg)
         self.notify(msg)

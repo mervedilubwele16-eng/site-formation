@@ -7,13 +7,23 @@ from pathlib import Path
 DEFAULTS = {
     "mode": "paper",              # "paper" (simulation) ou "live" (argent réel)
     "exchange": "binance",
-    "symbols": ["BTCUSDT", "ETHUSDT"],
-    "interval": "1h",
+    "symbols": ["BTCUSDT"],
+    "interval": "1d",
     "loop_seconds": 300,          # fréquence d'analyse
     "capital_initial": 1000.0,    # capital fictif en mode paper (USDT)
     "fees": 0.001,                # 0,1 % par ordre
     "objectif_gain": 12000.0,     # gain (USDT) à atteindre ; l'agent vend tout et s'arrête (0 = désactivé)
     "strategy": {
+        # "tendance" : stratégie retenue après recherche (suivi de tendance multi-signaux, bougies 1 jour)
+        # "classique" : première version (EMA/MACD/RSI), perdante en backtest réel — conservée pour comparaison
+        "type": "tendance",
+        "sma_periods": [50, 100, 150],
+        "donchian_periods": [20, 55],
+        "donchian_exit_frac": 0.5,
+        "vol_cible": 0.20,            # volatilité annuelle visée : plus bas = moins de pertes, moins de gains
+        "vol_window": 30,
+        "rebalance_seuil": 0.10,      # n'ajuste la position que si l'écart dépasse 10 %
+        "stop_secours_atr": 6.0,      # stop de secours posé sur la plateforme (loin : protection catastrophe)
         "ema_fast": 20,
         "ema_slow": 50,
         "ema_trend": 200,
@@ -30,7 +40,7 @@ DEFAULTS = {
         "max_position_pct": 0.25,     # max 25 % du capital par position
         "max_open_positions": 2,
         "max_daily_loss": 0.03,       # arrêt pour la journée à -3 %
-        "max_drawdown": 0.15,         # arrêt complet à -15 % depuis le plus haut
+        "max_drawdown": 0.25,         # arrêt complet à -25 % depuis le plus haut
         "max_volatility_pct": 0.08,   # pas d'entrée si ATR > 8 % du prix
         "cooldown_bars": 3,           # pause après un stop-loss
     },

@@ -9,7 +9,7 @@ from .broker import PaperBroker
 from .engine import Engine
 
 
-def run(cfg: dict, data: dict[str, pd.DataFrame]) -> dict:
+def run(cfg: dict, data: dict[str, pd.DataFrame], debut: str | None = None) -> dict:
     p = cfg["strategy"]
     broker = PaperBroker(cfg["capital_initial"], cfg["fees"])
     eng = Engine(cfg, broker)
@@ -17,8 +17,13 @@ def run(cfg: dict, data: dict[str, pd.DataFrame]) -> dict:
     index = sorted(set().union(*[df.index for df in enriched.values()]))
     w = strategy.warmup(p)
     pos_of = {s: {t: i for i, t in enumerate(df.index)} for s, df in enriched.items()}
+    first = max(df.index[min(w, len(df) - 1)] for df in enriched.values())
+    if debut:
+        first = max(first, pd.Timestamp(debut, tz=first.tz))
     curve = []
     for ts in index:
+        if ts < first:
+            continue
         for s, df in enriched.items():
             i = pos_of[s].get(ts)
             if i is not None and i >= w:
@@ -42,8 +47,7 @@ def summarize(cfg, equity: pd.Series, trades: list, data: dict) -> dict:
     losses = [t for t in trades if t["pnl"] <= 0]
     gross_win = sum(t["pnl"] for t in wins)
     gross_loss = -sum(t["pnl"] for t in losses)
-    bh = np.mean([df["close"].iloc[-1] / df["close"].iloc[strategy.warmup(cfg["strategy"])] - 1
-                  for df in data.values()])
+    bh = np.mean([df["close"].iloc[-1] / df["close"].asof(equity.index[0]) - 1 for df in data.values()])
     periods_per_year = 24 * 365 if cfg["interval"].endswith("h") else 365
     sharpe = rets.mean() / rets.std() * np.sqrt(periods_per_year) if rets.std() > 0 else 0.0
     return {
