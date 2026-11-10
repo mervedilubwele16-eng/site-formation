@@ -1,0 +1,1056 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bitume</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  /* Layout : un écran de jeu centré, une scène à la fois ; les panneaux passent sur une colonne au téléphone */
+  --nuit:#0d1130;
+  --bitume:#161b40;
+  --bitume-2:#1e2452;
+  --ligne:#2f3772;
+  --sodium:#ffb547;
+  --tag:#ff4fa3;
+  --craie:#eeeaff;
+  --brume:#9ea4cf;
+  --ok:#5fe3a1;
+  --danger:#ff5d5d;
+  --encre:#1a1300;
+  --f-display:"Bungee","Impact","Arial Black",sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--nuit);color:var(--craie)}
+body{margin:0;font-family:var(--f-body);font-size:16px;line-height:1.45;min-height:100%;
+  background:radial-gradient(900px 420px at 50% -140px,rgba(255,181,71,.15),transparent 70%),var(--nuit)}
+.app{max-width:1020px;margin:0 auto;padding-block:18px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:1.35rem}
+h3{font-size:1rem}
+p{margin:0}
+button,input{font:inherit;color:inherit}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--brume)}
+.small{font-size:.86rem}
+.label{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--brume);font-weight:700}
+
+.btn{appearance:none;border:2px solid var(--sodium);background:var(--sodium);color:var(--encre);font-weight:700;
+  padding:.55em 1em;border-radius:6px;cursor:pointer;transition:transform .08s,filter .15s,border-color .15s;font-size:.95rem;white-space:nowrap}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--craie);border-color:var(--ligne)}
+.btn.ghost:hover{border-color:var(--sodium)}
+.btn.tag{background:var(--tag);border-color:var(--tag);color:#22000f}
+.btn.sm{padding:.35em .7em;font-size:.85rem}
+.btn:disabled{opacity:.38;cursor:not-allowed;filter:none;transform:none}
+:focus-visible{outline:3px solid var(--tag);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.topbar h1{font-size:clamp(1.4rem,5vw,2rem);color:var(--sodium)}
+.panel{background:var(--bitume);border:1px solid var(--ligne);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.input{width:100%;background:var(--nuit);border:1px solid var(--ligne);border-radius:6px;padding:.6em .75em;font-size:1rem}
+.input:focus{border-color:var(--sodium);outline:none}
+
+/* ---------- Menu ---------- */
+.hero{padding-block:22px 28px;display:flex;flex-direction:column;gap:12px}
+.logo{font-family:var(--f-display);font-size:clamp(3.6rem,15vw,8rem);line-height:.88;color:var(--sodium);
+  text-shadow:5px 5px 0 var(--tag);letter-spacing:.02em;margin:0}
+.tagline{font-size:1.15rem;color:var(--brume);max-width:40ch}
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.mode{text-align:left;background:var(--bitume);border:1px solid var(--ligne);border-radius:10px;padding:18px;cursor:pointer;
+  display:flex;flex-direction:column;gap:8px;transition:border-color .15s,transform .15s;min-width:0}
+.mode:hover{border-color:var(--sodium);transform:translateY(-2px)}
+.mode h2{font-size:1.25rem}
+.mode .kind{font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;font-weight:700;color:var(--tag)}
+.mode .info{margin-top:auto;font-family:var(--f-mono);font-size:.8rem;color:var(--sodium)}
+.mode.star{grid-column:1/-1;border:2px solid var(--sodium);
+  background:linear-gradient(120deg,rgba(255,181,71,.13),transparent 55%),var(--bitume);padding:22px}
+.mode.star h2{font-size:clamp(1.5rem,5vw,2.1rem);color:var(--sodium)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.8rem;color:var(--brume)}
+.ladder span{border:1px solid var(--ligne);border-radius:99px;padding:2px 9px;background:var(--nuit)}
+.ladder span.last{border-color:var(--tag);color:var(--tag);font-weight:700}
+@media (max-width:760px){.modes{grid-template-columns:1fr}}
+
+/* ---------- Carrière ---------- */
+.hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bitume-2);border:1px solid var(--ligne);border-radius:10px;
+  padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px 18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(5,7,25,.6)}
+.stat{display:flex;flex-direction:column;gap:4px;min-width:0}
+.stat b{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.stat .name{font-family:var(--f-display);font-weight:400;font-size:1.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{height:8px;background:var(--nuit);border-radius:4px;overflow:hidden}
+.bar>i{display:block;height:100%;transition:width .3s}
+.pips{display:flex;gap:4px}
+.pips i{width:12px;height:12px;border-radius:50%;border:2px solid var(--sodium)}
+.pips i.on{background:var(--sodium)}
+.list{display:flex;flex-direction:column;gap:8px}
+.job{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:10px 12px;background:var(--nuit);border:1px solid var(--ligne);border-radius:8px}
+.job .meta{grid-column:1/-1;font-size:.78rem;color:var(--brume);display:flex;gap:4px 12px;flex-wrap:wrap;font-family:var(--f-mono)}
+.job.locked{opacity:.45}
+.log{max-height:240px;overflow:auto;font-size:.9rem;display:flex;flex-direction:column;gap:6px}
+.log div{padding-left:10px;border-left:2px solid var(--ligne)}
+.log .ok{border-color:var(--ok)} .log .ko{border-color:var(--danger)} .log .ev{border-color:var(--sodium)}
+.log .d{font-family:var(--f-mono);font-size:.72rem;color:var(--brume);margin-right:6px}
+.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.choices{grid-template-columns:1fr}}
+.choice{display:flex;flex-direction:column;gap:2px;padding:10px;border:1px solid var(--ligne);border-radius:8px;background:var(--nuit);cursor:pointer}
+.choice:has(input:checked){border-color:var(--sodium);background:rgba(255,181,71,.08)}
+.choice input{accent-color:var(--sodium);margin:0 0 4px}
+.found{border:2px dashed var(--tag);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.found h3{color:var(--tag)}
+.req{font-family:var(--f-mono);font-size:.82rem}
+.req .y{color:var(--ok)} .req .n{color:var(--danger)}
+.gangstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.gangstats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.gangstats div{background:var(--nuit);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column}
+.gangstats b{font-family:var(--f-mono);font-size:1.15rem}
+.city{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.city{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{appearance:none;text-align:left;cursor:pointer;background:var(--nuit);border:1px solid var(--ligne);border-top:5px solid var(--own);
+  border-radius:8px;padding:8px 9px;display:flex;flex-direction:column;gap:2px;min-width:0;font-size:.8rem}
+.tile b{font-size:.9rem;line-height:1.15}
+.tile .who{color:var(--own);font-weight:700}
+.tile .num{font-family:var(--f-mono);color:var(--brume);font-size:.74rem}
+.tile.mine{background:color-mix(in srgb,var(--own) 14%,var(--nuit))}
+.tile:hover{border-color:var(--sodium)}
+.swatches{display:flex;gap:10px;flex-wrap:wrap}
+.swatches label{width:38px;height:38px;border-radius:50%;background:var(--sw);border:3px solid transparent;cursor:pointer;position:relative}
+.swatches input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.swatches label:has(input:checked){border-color:var(--craie)}
+.swatches label:has(input:focus-visible){outline:3px solid var(--tag);outline-offset:2px}
+.banner{background:var(--tag);color:#22000f;border-radius:10px;padding:12px 16px;font-weight:700;margin-bottom:14px}
+
+/* ---------- Territoires ---------- */
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-width:560px;width:100%}
+.cell{appearance:none;aspect-ratio:1/1;max-width:100%;border-radius:8px;border:2px solid var(--ligne);cursor:pointer;
+  background:color-mix(in srgb,var(--own) 22%,var(--nuit));display:flex;flex-direction:column;justify-content:space-between;padding:6px;text-align:left;min-width:0}
+.cell .n{font-size:clamp(.58rem,2.2vw,.75rem);color:var(--brume);line-height:1.1;font-weight:600}
+.cell .t{font-family:var(--f-display);font-size:clamp(1.2rem,6vw,2rem);color:var(--own);line-height:1}
+.cell.sel{border-color:var(--craie);box-shadow:0 0 0 3px var(--sodium)}
+.cell.target{border-color:var(--tag);border-style:dashed}
+.cell.flash{animation:flash .5s}
+@keyframes flash{from{filter:brightness(2)}to{filter:none}}
+.legend{display:flex;flex-direction:column;gap:6px}
+.legend div{display:flex;align-items:center;gap:8px;font-size:.9rem}
+.legend i{width:14px;height:14px;border-radius:3px;background:var(--own)}
+.legend .dead{opacity:.4;text-decoration:line-through}
+.phase{font-family:var(--f-display);color:var(--sodium);font-size:1.05rem}
+
+/* ---------- Baston ---------- */
+.stage{position:relative;width:100%;max-width:960px;aspect-ratio:16/10;border-radius:10px;overflow:hidden;border:1px solid var(--ligne);background:var(--bitume)}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none}
+.over{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;
+  background:rgba(13,17,48,.82);padding:16px}
+.over h2{font-size:clamp(1.6rem,6vw,2.8rem);color:var(--sodium);text-shadow:3px 3px 0 var(--tag)}
+.pad{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:12px;display:none;gap:10px}
+.pad button{width:74px;height:74px;border-radius:50%;border:2px solid var(--sodium);background:rgba(255,181,71,.25);color:var(--craie);font-weight:700;font-size:.8rem;touch-action:none}
+.pad button.alt{border-color:var(--tag);background:rgba(255,79,163,.22);width:58px;height:58px;align-self:flex-end}
+@media (pointer:coarse){.pad{display:flex}}
+.keys{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:.85rem;color:var(--brume)}
+kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--ligne);border-bottom-width:3px;border-radius:4px;padding:0 5px;color:var(--craie);background:var(--nuit)}
+
+/* ---------- Braquage ---------- */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.cards{grid-template-columns:1fr}}
+.card{appearance:none;text-align:left;background:var(--bitume);border:1px solid var(--ligne);border-radius:10px;padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card:hover{border-color:var(--sodium)}
+.card.on{border:2px solid var(--sodium);background:color-mix(in srgb,var(--sodium) 10%,var(--bitume))}
+.card .skill{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:var(--tag)}
+.stars{color:var(--sodium);font-family:var(--f-mono)}
+.alarm{height:14px;background:var(--nuit);border-radius:7px;overflow:hidden;border:1px solid var(--ligne)}
+.alarm i{display:block;height:100%;background:linear-gradient(90deg,var(--sodium),var(--danger));transition:width .4s}
+.story{display:flex;flex-direction:column;gap:8px}
+.story p{padding-left:10px;border-left:3px solid var(--ligne)}
+.story p.ok{border-color:var(--ok)} .story p.ko{border-color:var(--danger)}
+.big{font-family:var(--f-display);font-size:clamp(1.8rem,7vw,3rem);color:var(--sodium)}
+
+/* ---------- Commun ---------- */
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(6,8,26,.78);display:flex;align-items:center;justify-content:center;
+  padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+.dialog{background:var(--bitume-2);border:2px solid var(--sodium);border-radius:12px;padding:20px;max-width:480px;width:100%;display:flex;flex-direction:column;gap:14px;max-height:90vh;overflow:auto}
+.dialog h2{color:var(--sodium)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--craie);color:var(--nuit);
+  font-weight:700;padding:10px 16px;border-radius:8px;max-width:calc(100% - 32px);box-shadow:0 6px 20px rgba(0,0,0,.4)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ================= MENU ================= -->
+<section id="menu" class="screen">
+  <div class="hero">
+    <span class="label">Bitume · ville de nuit · 4 modes de jeu</span>
+    <h1 class="logo">BITUME</h1>
+    <p class="tagline">La ville appartient à ceux qui la prennent. Commence au coin de la rue, finis à la tête de ton propre gang.</p>
+  </div>
+  <div class="modes">
+    <button class="mode star" data-go="carriere">
+      <span class="kind">Mode histoire</span>
+      <h2>De la rue au trône</h2>
+      <p>Tu pars de rien et tu bosses pour les Corbeaux. Missions, entraînement, respect : grimpe les rangs, puis fonde ton gang, recrute, et arrache les huit quartiers de Bitume aux bandes rivales.</p>
+      <div class="ladder"><span>Petit du quartier</span><span>Guetteur</span><span>Coursier</span><span>Soldat</span><span>Lieutenant</span><span>Bras droit</span><span class="last">Ton gang</span></div>
+      <span class="info" id="menu-carriere-info">Nouvelle partie</span>
+    </button>
+    <button class="mode" data-go="territoires">
+      <span class="kind">Stratégie</span>
+      <h2>Guerre des territoires</h2>
+      <p>Quatre gangs, seize quartiers. Place tes renforts, attaque les voisins, élimine les autres bandes.</p>
+      <span class="info">Partie de 15 à 25 min</span>
+    </button>
+    <button class="mode" data-go="baston">
+      <span class="kind">Arcade</span>
+      <h2>Baston de rue</h2>
+      <p>Seul contre des vagues de voyous. Frappe, esquive, tiens le plus longtemps possible.</p>
+      <span class="info" id="menu-baston-info">Record : aucun</span>
+    </button>
+    <button class="mode" data-go="braquage">
+      <span class="kind">Tactique</span>
+      <h2>Le Casse</h2>
+      <p>Choisis ta cible, monte ton équipe de trois, et prends les bonnes décisions avant que l'alarme ne hurle.</p>
+      <span class="info" id="menu-braquage-info">Meilleur butin : aucun</span>
+    </button>
+  </div>
+</section>
+
+<!-- ================= CARRIÈRE ================= -->
+<section id="carriere" class="screen" hidden>
+  <div class="topbar"><button class="btn ghost sm" data-go="menu">← Menu</button><h1>De la rue au trône</h1></div>
+  <div id="carriere-body"></div>
+</section>
+
+<!-- ================= TERRITOIRES ================= -->
+<section id="territoires" class="screen" hidden>
+  <div class="topbar"><button class="btn ghost sm" data-go="menu">← Menu</button><h1>Guerre des territoires</h1></div>
+  <div id="terr-body"></div>
+</section>
+
+<!-- ================= BASTON ================= -->
+<section id="baston" class="screen" hidden>
+  <div class="topbar"><button class="btn ghost sm" data-go="menu">← Menu</button><h1>Baston de rue</h1></div>
+  <div class="col">
+    <div class="stage" id="stage">
+      <canvas id="baston-cv" width="960" height="600" aria-label="Zone de combat"></canvas>
+      <div class="pad"><button class="alt" id="pad-dash" type="button">Esquive</button><button id="pad-atk" type="button">Frapper</button></div>
+      <div class="over" id="baston-over">
+        <h2 id="bo-title">Baston de rue</h2>
+        <p id="bo-text" class="muted">Les bandes rivales débarquent par vagues. Tous les 5 vagues, un chef.</p>
+        <button class="btn" id="bo-btn" type="button">Entrer dans la rue</button>
+      </div>
+    </div>
+    <div class="keys">
+      <span><kbd>ZQSD</kbd> / <kbd>WASD</kbd> / flèches : bouger</span>
+      <span><kbd>Espace</kbd> ou clic : frapper</span>
+      <span><kbd>Maj</kbd> : esquive</span>
+      <span>Au téléphone : glisse le pouce à gauche pour bouger</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BRAQUAGE ================= -->
+<section id="braquage" class="screen" hidden>
+  <div class="topbar"><button class="btn ghost sm" data-go="menu">← Menu</button><h1>Le Casse</h1></div>
+  <div id="heist-body"></div>
+</section>
+
+</div>
+
+<div class="overlay" id="overlay" hidden><div class="dialog" role="dialog" aria-modal="true"><div id="dialog-body" class="col"></div><div class="row" id="dialog-actions"></div></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+'use strict';
+/* ================= Outils ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const fmt=n=>Math.round(n).toLocaleString('fr-FR');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
+  del(k){try{localStorage.removeItem(k);}catch(e){}}
+};
+let toastT;
+function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600);}
+function dialog(html,buttons){
+  const o=$('#overlay');$('#dialog-body').innerHTML=html;const b=$('#dialog-actions');b.innerHTML='';
+  (buttons||[{label:'Continuer'}]).forEach(x=>{const e=document.createElement('button');e.type='button';e.className='btn '+(x.cls||'');e.textContent=x.label;
+    e.onclick=()=>{if(x.fn&&x.fn()===false)return;o.hidden=true;};b.appendChild(e);});
+  o.hidden=false;setTimeout(()=>{const f=$('#dialog-body input')||b.firstChild;f&&f.focus();},30);
+}
+const GANG_COLORS={meute:'#4fd1ff',crocs:'#ff6b4a',corbeaux:'#9d8cff'};
+
+/* ================= MODE CARRIÈRE ================= */
+const Career=(()=>{
+  const KEY='bitume-carriere-v1';
+  const RANKS=[
+    {n:'Petit du quartier',r:0},{n:'Guetteur',r:15},{n:'Coursier',r:45},
+    {n:'Soldat',r:100},{n:'Lieutenant',r:180},{n:'Bras droit',r:290}];
+  const STORY=[ '',
+    "Le Faucon, chef des Corbeaux, te tend un vieux téléphone : « Tu vois les flics, tu m'appelles. » Te voilà guetteur.",
+    "On te confie des colis. Tu ne poses pas de questions, tu livres. Te voilà coursier.",
+    "Tu as tenu le coin face à la Meute. Le Faucon te donne une veste aux couleurs des Corbeaux. Te voilà soldat.",
+    "Trois soldats bossent maintenant sous tes ordres. Te voilà lieutenant.",
+    "Le Faucon ne sort plus sans toi. Te voilà bras droit. Mais tu commences à te demander pourquoi tu bosses pour un autre."];
+  const FOUND_R=380, FOUND_CASH=1200;
+  const STAT_N={force:'Force',ruse:'Ruse',charisme:'Charisme'};
+  const MISSIONS=[
+    {id:'guet',n:'Faire le guet',rank:0,stat:'ruse',diff:1,cash:[15,30],resp:2,heat:1,hp:6,d:"Surveiller les allées et venues au coin de la rue."},
+    {id:'tags',n:'Taguer le territoire',rank:0,stat:'charisme',diff:1,cash:[5,15],resp:3,heat:3,hp:4,d:"Marquer les murs aux couleurs des Corbeaux."},
+    {id:'colis',n:'Livrer un colis',rank:1,stat:'ruse',diff:2,cash:[40,70],resp:4,heat:4,hp:8,d:"Traverser trois quartiers sans te faire repérer."},
+    {id:'dette',n:'Récupérer une dette',rank:2,stat:'force',diff:3,cash:[80,140],resp:7,heat:5,hp:15,d:"Un gérant de bar doit de l'argent au Faucon."},
+    {id:'coin',n:'Défendre le coin',rank:3,stat:'force',diff:4,cash:[60,110],resp:12,heat:7,hp:25,d:"La Meute veut reprendre ton coin de rue."},
+    {id:'entrepot',n:'Vider un entrepôt',rank:3,stat:'ruse',diff:5,cash:[200,340],resp:10,heat:12,hp:12,d:"Les docks, la nuit, un cadenas à faire sauter."},
+    {id:'nego',n:'Négocier une alliance',rank:4,stat:'charisme',diff:5,cash:[220,380],resp:15,heat:3,hp:6,d:"Convaincre un fournisseur de bosser avec les Corbeaux."},
+    {id:'escorte',n:'Escorter le Faucon',rank:4,stat:'force',diff:6,cash:[150,220],resp:18,heat:6,hp:30,d:"Une réunion au sommet qui peut mal tourner."},
+    {id:'coup',n:'Monter le gros coup',rank:5,stat:'ruse',diff:7,cash:[500,900],resp:28,heat:18,hp:20,d:"Le casse dont toute la ville parlera."}];
+  const TRAIN={
+    force:{n:'Salle de boxe',d:'Force +1'},
+    ruse:{n:'Étudier les rues',d:'Ruse +1'},
+    charisme:{n:'Traîner au café',d:'Charisme +1'}};
+  const DISTRICTS=[
+    {n:'Les Docks',inc:60,def:8},{n:'Gare du Nord',inc:70,def:10},{n:'Vieux Marché',inc:50,def:6},{n:'Cité des Tilleuls',inc:30,def:4},
+    {n:'Boulevard Néon',inc:90,def:14},{n:'Zone Industrielle',inc:55,def:9},{n:'Port-Sec',inc:65,def:11},{n:'Les Hauts',inc:110,def:18}];
+  const HOME=3;
+  const START_OWNERS=['meute','corbeaux','crocs','me','corbeaux','meute','crocs','corbeaux'];
+  const RIVALS={corbeaux:'Les Corbeaux',meute:'La Meute',crocs:'Crocs Rouges'};
+  const SWATCHES=['#ffb547','#ff4fa3','#5fe3a1','#ffe45c','#f2efff'];
+  let C=null;
+
+  const save=()=>store.set(KEY,C);
+  function log(m,c){C.log.unshift({m,c:c||'',d:C.day});C.log=C.log.slice(0,50);}
+  const chance=m=>clamp(.62+(C[m.stat]-m.diff)*.11,.12,.95);
+  const trainCost=s=>20+C[s]*30;
+  const power=()=>C.gang.members*2+C.gang.weapons*3+C.force;
+  const recruitCost=()=>60+C.gang.members*15;
+  const equipCost=()=>100+C.gang.weapons*50;
+  const atkChance=d=>{const p=power();return clamp(p/(p+d.def*1.6),.05,.95);};
+  const owner=o=>o==='me'?{n:C.gang.name,c:C.gang.color}:{n:RIVALS[o],c:GANG_COLORS[o]};
+
+  function open(){if(!C)C=store.get(KEY,null);render();}
+  function summary(){const s=C||store.get(KEY,null);if(!s)return null;
+    return s.gang?`Jour ${s.day} · Chef de ${s.gang.name} · ${s.city.filter(d=>d.owner==='me').length}/8 quartiers`:`Jour ${s.day} · ${RANKS[s.rank].n} · ${fmt(s.cash)} €`;}
+
+  function newGame(name,origin){
+    C={name,day:1,cash:40,respect:0,hp:100,heat:0,energy:3,force:1,ruse:1,charisme:1,rank:0,gang:null,city:null,log:[],won:false};
+    C[origin]+=2;
+    log("Jour 1. Tu traînes en bas de la Cité des Tilleuls. Les Corbeaux tiennent le quartier. Il va falloir te faire un nom.",'ev');
+    save();render();
+  }
+
+  /* ----- rendu ----- */
+  function render(){
+    const root=$('#carriere-body');
+    if(!C){root.innerHTML=creation();return;}
+    root.innerHTML=(C.won?`<div class="banner">Tu règnes sur Bitume. Les huit quartiers portent les couleurs de ${esc(C.gang.name)}.</div>`:'')+
+      hud()+`<div class="grid2">${C.gang?gangPanel():missions()}${side()}</div>`;
+  }
+  function creation(){
+    return `<div class="panel" style="max-width:620px">
+      <h2>Qui es-tu ?</h2>
+      <p class="muted">Tu n'as rien : ni argent, ni nom. Tu vas bosser pour les Corbeaux, grimper les rangs jusqu'à bras droit, puis monter ton propre gang et prendre la ville.</p>
+      <label class="label" for="c-name">Ton surnom</label>
+      <input id="c-name" class="input" maxlength="18" value="Nox" autocomplete="off">
+      <span class="label">Ton style</span>
+      <div class="choices">
+        <label class="choice"><input type="radio" name="c-origin" value="force" checked><b>Bagarreur</b><span class="muted small">Force +2</span></label>
+        <label class="choice"><input type="radio" name="c-origin" value="ruse"><b>Malin</b><span class="muted small">Ruse +2</span></label>
+        <label class="choice"><input type="radio" name="c-origin" value="charisme"><b>Beau parleur</b><span class="muted small">Charisme +2</span></label>
+      </div>
+      <div class="row"><button class="btn" data-act="start" type="button">Descendre dans la rue</button></div>
+    </div>`;
+  }
+  function hud(){
+    const r=RANKS[C.rank],next=RANKS[C.rank+1];
+    const goal=next?next.r:FOUND_R;
+    const pct=C.gang?100:clamp((C.respect-r.r)/(goal-r.r)*100,0,100);
+    const pips=[0,1,2].map(i=>`<i class="${i<C.energy?'on':''}"></i>`).join('');
+    return `<div class="hud">
+      <div class="stat"><span class="label">Jour ${C.day}</span><span class="name">${esc(C.name)}</span><span class="muted small">${C.gang?'Chef de '+esc(C.gang.name):r.n}</span></div>
+      <div class="stat"><span class="label">Billets</span><b>${fmt(C.cash)} €</b><span class="pips" title="Actions restantes aujourd'hui">${pips}</span></div>
+      <div class="stat"><span class="label">Santé · ${C.hp}/100</span><div class="bar"><i style="width:${C.hp}%;background:var(--ok)"></i></div></div>
+      <div class="stat"><span class="label">Recherché · ${C.heat}/100</span><div class="bar"><i style="width:${C.heat}%;background:var(--danger)"></i></div></div>
+      <div class="stat"><span class="label">Respect · ${C.respect}${C.gang?'':' / '+goal}</span><div class="bar"><i style="width:${pct}%;background:var(--tag)"></i></div></div>
+      <div class="stat"><span class="label">Force · Ruse · Charisme</span><b>${C.force} · ${C.ruse} · ${C.charisme}</b></div>
+    </div>`;
+  }
+  function missions(){
+    const rows=MISSIONS.map(m=>{
+      const locked=m.rank>C.rank;
+      return `<div class="job ${locked?'locked':''}">
+        <div><b>${m.n}</b><div class="muted small">${m.d}</div></div>
+        ${locked?`<span class="label">${RANKS[m.rank].n}</span>`:`<button class="btn sm" type="button" data-act="mission" data-id="${m.id}" ${C.energy<1?'disabled':''}>Y aller</button>`}
+        <div class="meta"><span>${STAT_N[m.stat]} · ${Math.round(chance(m)*100)} %</span><span>+${m.cash[0]}–${m.cash[1]} €</span><span>+${m.resp} respect</span><span>flics +${m.heat}</span></div>
+      </div>`;}).join('');
+    return `<div class="panel"><div class="panel-head"><h2>Missions</h2><span class="label">Pour les Corbeaux</span></div>
+      <div class="list">${rows}</div>${foundBox()}</div>`;
+  }
+  function foundBox(){
+    if(C.rank<5)return `<p class="muted small">Atteins le rang de bras droit pour pouvoir quitter les Corbeaux et fonder ton propre gang.</p>`;
+    const okR=C.respect>=FOUND_R,okC=C.cash>=FOUND_CASH;
+    return `<div class="found"><h3>Fonder ton propre gang</h3>
+      <p class="small">Quitte les Corbeaux, prends la Cité des Tilleuls et monte ta bande. Ils ne te le pardonneront pas.</p>
+      <div class="req"><span class="${okR?'y':'n'}">${okR?'✓':'✗'} Respect ${C.respect}/${FOUND_R}</span> · <span class="${okC?'y':'n'}">${okC?'✓':'✗'} ${fmt(C.cash)}/${fmt(FOUND_CASH)} €</span></div>
+      <div class="row"><button class="btn tag" type="button" data-act="found" ${okR&&okC?'':'disabled'}>Fonder mon gang</button></div></div>`;
+  }
+  function gangPanel(){
+    const g=C.gang,owned=C.city.filter(d=>d.owner==='me');
+    const inc=owned.reduce((s,d)=>s+DISTRICTS[d.id].inc,0)-g.members*5;
+    const tiles=C.city.map(d=>{const o=owner(d.owner),mine=d.owner==='me';
+      return `<button class="tile ${mine?'mine':''}" type="button" style="--own:${o.c}" data-act="district" data-id="${d.id}">
+        <b>${DISTRICTS[d.id].n}</b><span class="who">${esc(o.n)}</span>
+        <span class="num">déf ${d.def} · +${DISTRICTS[d.id].inc} €/j</span>
+        <span class="num">${mine?'Fortifier · 100 €':'Attaque · '+Math.round(atkChance(d)*100)+' %'}</span></button>`;}).join('');
+    return `<div class="panel" style="--gc:${g.color}">
+      <div class="panel-head"><h2 style="color:var(--gc)">${esc(g.name)}</h2><span class="label">${owned.length}/8 quartiers</span></div>
+      <div class="gangstats">
+        <div><span class="label">Membres</span><b>${g.members}</b></div>
+        <div><span class="label">Armement</span><b>${g.weapons}/10</b></div>
+        <div><span class="label">Puissance</span><b>${power()}</b></div>
+        <div><span class="label">Gain / jour</span><b>${inc>=0?'+':''}${inc} €</b></div>
+      </div>
+      <div class="row">
+        <button class="btn sm" type="button" data-act="recruit" ${C.cash<recruitCost()||g.members>=40?'disabled':''}>Recruter · ${recruitCost()} €</button>
+        <button class="btn sm" type="button" data-act="equip" ${C.cash<equipCost()||g.weapons>=10?'disabled':''}>Armer · ${g.weapons>=10?'max':equipCost()+' €'}</button>
+      </div>
+      <span class="label">La ville de Bitume</span>
+      <div class="city">${tiles}</div>
+      <p class="muted small">Attaquer un quartier coûte une action. Chaque membre coûte 5 € par jour. La nuit, les gangs rivaux peuvent contre-attaquer : fortifie tes quartiers et garde du monde.</p>
+    </div>`;
+  }
+  function side(){
+    const tr=['force','ruse','charisme'].map(s=>{const c=trainCost(s),max=C[s]>=10;
+      return `<div class="job"><div><b>${TRAIN[s].n}</b><div class="muted small">${TRAIN[s].d} · niveau ${C[s]}/10</div></div>
+        <button class="btn sm ghost" type="button" data-act="train" data-s="${s}" ${max||C.energy<1||C.cash<c?'disabled':''}>${max?'Max':c+' €'}</button></div>`;}).join('');
+    const logs=C.log.map(l=>`<div class="${l.c}"><span class="d">J${l.d}</span>${esc(l.m)}</div>`).join('');
+    return `<div class="col">
+      <div class="panel"><h2>S'entraîner</h2><div class="list">${tr}</div></div>
+      <div class="panel"><h2>Souffler</h2>
+        <div class="row">
+          <button class="btn ghost sm" type="button" data-act="lowkey" ${C.energy<1?'disabled':''}>Se faire oublier</button>
+          <button class="btn ghost sm" type="button" data-act="clinic" ${C.cash<60||C.hp>=100?'disabled':''}>Clinique · 60 €</button>
+          <button class="btn sm" type="button" data-act="sleep">Finir la journée</button>
+        </div>
+        <p class="muted small">Trois actions par jour. Dormir rend un peu de santé et calme les flics. Au-delà de 60 de recherche, une descente de police peut tomber.</p>
+      </div>
+      <div class="panel"><div class="panel-head"><h2>Journal</h2><button class="btn ghost sm" type="button" data-act="reset">Recommencer</button></div><div class="log">${logs}</div></div>
+    </div>`;
+  }
+
+  /* ----- actions ----- */
+  function mission(id){
+    const m=MISSIONS.find(x=>x.id===id);if(!m||m.rank>C.rank||C.energy<1)return;
+    C.energy--;
+    if(Math.random()<chance(m)){
+      const cash=rnd(m.cash[0],m.cash[1]);C.cash+=cash;C.respect+=m.resp;C.heat=clamp(C.heat+m.heat,0,100);
+      const dmg=Math.random()<.3?rnd(1,Math.ceil(m.hp/3)):0;C.hp=clamp(C.hp-dmg,0,100);
+      log(`${m.n} : réussi. +${cash} €, +${m.resp} respect${dmg?`, −${dmg} santé`:''}.`,'ok');
+    }else{
+      const dmg=rnd(Math.ceil(m.hp/2),m.hp),lost=Math.ceil(m.resp/3);
+      C.hp=clamp(C.hp-dmg,0,100);C.heat=clamp(C.heat+m.heat*2,0,100);C.respect=Math.max(0,C.respect-lost);
+      log(`${m.n} : raté. −${dmg} santé, −${lost} respect, les flics te repèrent.`,'ko');
+    }
+    after();
+  }
+  function after(){
+    if(C.hp<=0){
+      const loss=Math.round(C.cash*.3);C.cash-=loss;C.hp=45;C.day++;C.energy=3;C.respect=Math.max(0,C.respect-5);
+      log(`Tu te réveilles à l'hôpital. Les soins te coûtent ${loss} €.`,'ko');
+      dialog(`<h2>À l'hôpital</h2><p>Tu t'es fait sortir. Deux jours de soins, ${fmt(loss)} € de frais et un peu de respect perdu.</p>`);
+    }else if(C.heat>=100)arrest();
+    while(!C.gang&&C.rank<5&&C.respect>=RANKS[C.rank+1].r){
+      C.rank++;log(`Nouveau rang : ${RANKS[C.rank].n}.`,'ev');
+      const txt=STORY[C.rank];
+      dialog(`<span class="label">Nouveau rang</span><h2>${RANKS[C.rank].n}</h2><p>${txt}</p>`);
+    }
+    if(C.gang)checkEnd();
+    save();render();
+  }
+  function arrest(){
+    const loss=Math.round(C.cash*.4);C.cash-=loss;C.heat=25;C.day+=2;C.energy=3;
+    let extra='';
+    if(C.gang&&C.gang.members>1){C.gang.members--;extra=' Un de tes gars tombe avec toi.';}
+    log(`Descente de police. Garde à vue, ${loss} € saisis.${extra}`,'ko');
+    dialog(`<h2>Descente de police</h2><p>Les flics t'ont embarqué. Deux jours en garde à vue et ${fmt(loss)} € saisis.${extra}</p>`);
+  }
+  function train(s){
+    const c=trainCost(s);if(C.energy<1||C.cash<c||C[s]>=10)return;
+    C.energy--;C.cash-=c;C[s]++;log(`${TRAIN[s].n} : ${s==='charisme'?'charisme':s} passe à ${C[s]}.`,'');save();render();
+  }
+  function lowkey(){if(C.energy<1)return;C.energy--;const v=rnd(12,20);C.heat=Math.max(0,C.heat-v);log(`Tu te fais oublier. Recherche −${v}.`,'');save();render();}
+  function clinic(){if(C.cash<60)return;C.cash-=60;C.hp=Math.min(100,C.hp+40);log('Clinique : +40 santé.','');save();render();}
+  function sleep(){
+    C.day++;C.energy=3;C.hp=Math.min(100,C.hp+15);C.heat=Math.max(0,C.heat-6);
+    const r=Math.random();
+    if(r<.12){const v=rnd(10,40);C.cash+=v;log(`En rentrant, tu trouves ${v} € par terre.`,'ev');}
+    else if(r<.22){C.respect+=3;log('On parle de toi dans le quartier. +3 respect.','ev');}
+    else if(r<.30){C.heat=Math.min(100,C.heat+6);log('Une patrouille tourne dans ta rue. Recherche +6.','ev');}
+    if(C.gang)night();
+    if(C.heat>=60&&Math.random()<(C.heat-50)/100)arrest();
+    else log(`Jour ${C.day}. La ville se réveille.`,'');
+    if(C.gang)checkEnd();
+    save();render();
+  }
+  function night(){
+    const g=C.gang,owned=C.city.filter(d=>d.owner==='me');
+    const inc=owned.reduce((s,d)=>s+DISTRICTS[d.id].inc,0),up=g.members*5;
+    C.cash+=inc-up;log(`Collecte de la nuit : +${inc} €, salaires −${up} €.`,'');
+    if(C.cash<0){C.cash=0;if(g.members>1){g.members--;log('Pas assez pour payer tout le monde : un membre s\'en va.','ko');}}
+    C.city.forEach(d=>{if(d.owner!=='me'&&Math.random()<.25)d.def++;});
+    const rivals=[...new Set(C.city.filter(d=>d.owner!=='me').map(d=>d.owner))];
+    if(rivals.length&&Math.random()<.45){
+      const rv=pick(rivals),target=pick(owned);
+      const str=rnd(6,12+Math.floor((C.day-g.since)/2));
+      const def=target.def+g.members*1.2+g.weapons*1.5;
+      const nm=DISTRICTS[target.id].n;
+      if(str>def){
+        if(target.id===HOME||owned.length===1){
+          const lost=Math.min(g.members,rnd(1,2));g.members-=lost;
+          log(`${RIVALS[rv]} attaque ${nm}. Tu tiens, mais tu perds ${lost} membre${lost>1?'s':''}.`,'ko');
+        }else{
+          target.owner=rv;target.def=Math.max(5,Math.round(str/2));
+          log(`${RIVALS[rv]} t'a pris ${nm} pendant la nuit.`,'ko');
+        }
+      }else log(`${RIVALS[rv]} a tenté de prendre ${nm}. Tes gars ont tenu.`,'ok');
+    }
+  }
+  function found(){
+    const sw=SWATCHES.map((c,i)=>`<label style="--sw:${c}" title="Couleur ${i+1}"><input type="radio" name="g-col" value="${c}" ${i===1?'checked':''} aria-label="Couleur ${i+1}"></label>`).join('');
+    dialog(`<span class="label">Le grand saut</span><h2>Ton gang</h2>
+      <p>Tu quittes les Corbeaux avec trois gars fidèles. Tu gardes la Cité des Tilleuls. Le reste de la ville est à prendre.</p>
+      <label class="label" for="g-name">Nom du gang</label>
+      <input id="g-name" class="input" maxlength="20" value="Les Néons" autocomplete="off">
+      <span class="label">Couleurs</span><div class="swatches">${sw}</div>`,
+      [{label:'Fonder le gang',cls:'tag',fn:()=>{
+        const name=($('#g-name').value||'').trim()||'Les Néons';
+        const col=(document.querySelector('input[name="g-col"]:checked')||{}).value||SWATCHES[1];
+        C.cash-=FOUND_CASH;
+        C.gang={name,color:col,members:4,weapons:0,since:C.day};
+        C.city=DISTRICTS.map((d,i)=>({id:i,owner:START_OWNERS[i],def:d.def}));
+        log(`Tu fondes ${name}. Les Corbeaux te déclarent la guerre.`,'ev');
+        save();render();
+      }},{label:'Pas encore',cls:'ghost'}]);
+  }
+  function district(id){
+    const d=C.city[id];if(!d)return;
+    if(d.owner==='me'){
+      if(C.cash<100){toast('Il faut 100 € pour fortifier.');return;}
+      C.cash-=100;d.def+=3;log(`${DISTRICTS[id].n} fortifié. Défense ${d.def}.`,'');save();render();return;
+    }
+    if(C.energy<1){toast("Plus d'action aujourd'hui : finis la journée.");return;}
+    C.energy--;
+    const g=C.gang,nm=DISTRICTS[id].n,from=RIVALS[d.owner];
+    if(Math.random()<atkChance(d)){
+      const lost=rnd(0,1),loot=rnd(50,150);g.members=Math.max(1,g.members-lost);
+      d.owner='me';d.def=Math.max(4,Math.floor(d.def/2));C.respect+=10;C.cash+=loot;C.heat=clamp(C.heat+6,0,100);
+      log(`Tu prends ${nm} à ${from}. +${loot} €${lost?', un blessé':''}.`,'ok');
+    }else{
+      const lost=rnd(1,2),dmg=rnd(5,15);g.members=Math.max(0,g.members-lost);C.hp=clamp(C.hp-dmg,0,100);C.heat=clamp(C.heat+8,0,100);
+      log(`Attaque ratée sur ${nm}. −${lost} membre${lost>1?'s':''}, −${dmg} santé.`,'ko');
+    }
+    after();
+  }
+  function checkEnd(){
+    const g=C.gang;
+    if(g.members<=0){
+      dialog(`<h2>Ton gang est tombé</h2><p>Plus personne ne porte tes couleurs. La rue t'a repris ce qu'elle t'avait donné, au jour ${C.day}.</p>`,
+        [{label:'Recommencer',fn:()=>{store.del(KEY);C=null;render();}}]);return;
+    }
+    if(!C.won&&C.city.every(d=>d.owner==='me')){
+      C.won=true;log('Bitume est à toi.','ev');
+      dialog(`<span class="label">Victoire · jour ${C.day}</span><h2>Roi de Bitume</h2><p>Les Corbeaux, la Meute et les Crocs Rouges ont plié. Les huit quartiers portent les couleurs de ${esc(g.name)}. Parti de rien, tu tiens toute la ville.</p>`);
+    }
+  }
+  function reset(){
+    dialog('<h2>Recommencer ?</h2><p>Ta partie actuelle sera effacée.</p>',
+      [{label:'Effacer et recommencer',cls:'tag',fn:()=>{store.del(KEY);C=null;render();}},{label:'Annuler',cls:'ghost'}]);
+  }
+  $('#carriere-body').addEventListener('click',e=>{
+    const b=e.target.closest('[data-act]');if(!b||b.disabled)return;
+    const a=b.dataset.act;
+    if(a==='start'){const n=($('#c-name').value||'').trim()||'Nox';const o=(document.querySelector('input[name="c-origin"]:checked')||{}).value||'force';newGame(n,o);}
+    else if(!C)return;
+    else if(a==='mission')mission(b.dataset.id);
+    else if(a==='train')train(b.dataset.s);
+    else if(a==='lowkey')lowkey();
+    else if(a==='clinic')clinic();
+    else if(a==='sleep')sleep();
+    else if(a==='found')found();
+    else if(a==='district')district(+b.dataset.id);
+    else if(a==='recruit'){const c=recruitCost();if(C.cash<c)return;C.cash-=c;const n=1+(C.charisme>=5?1:0)+(C.charisme>=9?1:0);C.gang.members=Math.min(40,C.gang.members+n);log(`${n} recrue${n>1?'s':''} rejoin${n>1?'gnent':'t'} le gang.`,'ok');save();render();}
+    else if(a==='equip'){const c=equipCost();if(C.cash<c||C.gang.weapons>=10)return;C.cash-=c;C.gang.weapons++;log(`Armement niveau ${C.gang.weapons}.`,'');save();render();}
+    else if(a==='reset')reset();
+  });
+  return {open,summary};
+})();
+
+/* ================= MODE TERRITOIRES ================= */
+const Terr=(()=>{
+  const N=4;
+  const NAMES=['Les Docks','Gare du Nord','Vieux Marché','Les Tours','La Friche','Bd Néon','Pont-Rouge','Le Canal','Zone Indus','Les Halles','Belleroche','Port-Sec','Les Tilleuls','Saint-Clou','Le Terminus','Les Hauts'];
+  const GANGS=[{n:'Ton gang',c:'#ffb547'},{n:'La Meute',c:GANG_COLORS.meute},{n:'Crocs Rouges',c:GANG_COLORS.crocs},{n:'Les Corbeaux',c:GANG_COLORS.corbeaux}];
+  const START=[12,0,3,15];
+  let T=null;
+  const adj=i=>{const x=i%N,y=Math.floor(i/N),r=[];if(x>0)r.push(i-1);if(x<N-1)r.push(i+1);if(y>0)r.push(i-N);if(y<N-1)r.push(i+N);return r;};
+  const owned=g=>T.cells.filter(c=>c.owner===g).length;
+  const reinf=g=>3+Math.floor(owned(g)/3);
+  const dice=n=>Array.from({length:n},()=>rnd(1,6)).sort((a,b)=>b-a);
+  const gname=g=>g<0?'des indépendants':GANGS[g].n;
+  function neu(){
+    const cells=Array.from({length:16},()=>({owner:-1,troops:rnd(1,2)}));
+    START.forEach((c,g)=>{cells[c]={owner:g,troops:4};});
+    T={cells,phase:'renfort',left:0,sel:-1,turn:1,moved:false,log:[],over:false};
+    T.left=reinf(0);
+    T.log.unshift('Tour 1 : place tes renforts sur tes quartiers.');
+  }
+  function blitz(from,to){
+    const A=T.cells[from],D=T.cells[to];let la=0,ld=0;const prev=D.owner;
+    while(A.troops>1&&D.troops>0){
+      const a=Math.min(3,A.troops-1),d=Math.min(2,D.troops),ra=dice(a),rd=dice(d);
+      for(let k=0;k<Math.min(a,d);k++){if(ra[k]>rd[k]){D.troops--;ld++;}else{A.troops--;la++;}}
+    }
+    const won=D.troops===0;
+    if(won){D.owner=A.owner;D.troops=A.troops-1;A.troops=1;}
+    return {won,la,ld,prev};
+  }
+  function render(){
+    if(!T)neu();
+    const p=T.phase;
+    const tgt=new Set();
+    if(p==='attaque'&&T.sel>=0)adj(T.sel).forEach(j=>{if(T.cells[j].owner!==0||!T.moved)tgt.add(j);});
+    const cells=T.cells.map((c,i)=>{
+      const col=c.owner<0?'#7d83ad':GANGS[c.owner].c;
+      return `<button class="cell ${T.sel===i?'sel':''} ${tgt.has(i)?'target':''}" type="button" style="--own:${col}" data-i="${i}" aria-label="${NAMES[i]}, ${c.troops} hommes, ${gname(c.owner)}">
+        <span class="n">${NAMES[i]}</span><span class="t">${c.troops}</span></button>`;}).join('');
+    const legend=GANGS.map((g,i)=>{const n=owned(i);return `<div class="${n?'':'dead'}" style="--own:${g.c}"><i></i>${g.n} · <span class="mono">${n}</span></div>`;}).join('')+
+      `<div style="--own:#7d83ad"><i></i>Indépendants · <span class="mono">${owned(-1)}</span></div>`;
+    let instr='',btn='';
+    if(T.over)instr='Partie terminée.';
+    else if(p==='renfort'){instr=`Renforts : touche tes quartiers pour placer <b class="mono">${T.left}</b> homme${T.left>1?'s':''}.`;}
+    else{instr=T.sel<0?'Touche un de tes quartiers (2 hommes minimum) pour lancer une attaque.':'Touche un quartier voisin en pointillés : ennemi = attaque, à toi = déplacement (une fois par tour).';
+      btn=`<button class="btn" type="button" data-t="end">Finir le tour</button>`;}
+    $('#terr-body').innerHTML=`<div class="grid2">
+      <div class="col"><div class="panel"><div class="panel-head"><span class="phase">Tour ${T.turn} · ${p==='renfort'?'Renforts':'Attaques'}</span>${btn}</div>
+        <p class="small">${instr}</p><div class="board">${cells}</div></div></div>
+      <div class="col">
+        <div class="panel"><h2>Les gangs</h2><div class="legend">${legend}</div></div>
+        <div class="panel"><div class="panel-head"><h2>Rapport</h2><button class="btn ghost sm" type="button" data-t="new">Nouvelle partie</button></div>
+          <div class="log">${T.log.slice(0,30).map(l=>`<div>${esc(l)}</div>`).join('')}</div></div>
+        <div class="panel"><h3>Règles</h3><p class="small muted">Chaque tour, tu reçois 3 hommes plus 1 par tranche de 3 quartiers. Une attaque se joue aux dés jusqu'à ce que l'attaquant n'ait plus qu'un homme ou que le défenseur soit à zéro ; à égalité, le défenseur gagne. Élimine les trois gangs rivaux pour gagner.</p></div>
+      </div></div>`;
+  }
+  function click(i){
+    if(T.over)return;
+    const c=T.cells[i];
+    if(T.phase==='renfort'){
+      if(c.owner!==0){toast('Place tes renforts sur tes propres quartiers.');return;}
+      c.troops++;T.left--;
+      if(T.left<=0){T.phase='attaque';T.log.unshift('Renforts placés. À l\'attaque.');}
+      render();return;
+    }
+    if(T.sel<0){if(c.owner===0&&c.troops>1)T.sel=i;else if(c.owner===0)toast('Il faut au moins 2 hommes pour bouger.');render();return;}
+    if(i===T.sel){T.sel=-1;render();return;}
+    const isAdj=adj(T.sel).includes(i);
+    if(c.owner===0){
+      if(isAdj&&!T.moved){const s=T.cells[T.sel];c.troops+=s.troops-1;T.log.unshift(`Tu déplaces ${s.troops-1} hommes vers ${NAMES[i]}.`);s.troops=1;T.moved=true;T.sel=-1;}
+      else if(c.troops>1)T.sel=i;else T.sel=-1;
+      render();return;
+    }
+    if(!isAdj){toast('Tu ne peux attaquer qu\'un quartier voisin.');return;}
+    const r=blitz(T.sel,i);
+    T.log.unshift(r.won?`Tu prends ${NAMES[i]} à ${gname(r.prev)} (pertes ${r.la} contre ${r.ld}).`:`Attaque repoussée à ${NAMES[i]} (pertes ${r.la} contre ${r.ld}).`);
+    T.sel=r.won&&T.cells[i].troops>1?i:-1;
+    check();render();
+    if(r.won){const el=document.querySelector(`.cell[data-i="${i}"]`);el&&el.classList.add('flash');}
+  }
+  function ai(g){
+    if(!owned(g))return;
+    let n=reinf(g);
+    const border=()=>T.cells.map((c,i)=>i).filter(i=>T.cells[i].owner===g&&adj(i).some(j=>T.cells[j].owner!==g));
+    const b=border();
+    if(b.length){
+      let best=b[0],bs=-1e9;
+      b.forEach(i=>{const weak=Math.min(...adj(i).filter(j=>T.cells[j].owner!==g).map(j=>T.cells[j].troops));const s=-weak+T.cells[i].troops*.2+Math.random();if(s>bs){bs=s;best=i;}});
+      T.cells[best].troops+=n;
+    }
+    for(let k=0;k<8;k++){
+      let mv=null,ms=0;
+      T.cells.forEach((c,i)=>{if(c.owner!==g||c.troops<3)return;adj(i).forEach(j=>{const d=T.cells[j];if(d.owner===g)return;const s=c.troops-d.troops+(d.owner===0?.5:0);if(s>1.5&&s>ms){ms=s;mv=[i,j];}});});
+      if(!mv)break;
+      const r=blitz(mv[0],mv[1]);
+      if(r.won)T.log.unshift(`${GANGS[g].n} prend ${NAMES[mv[1]]}${r.prev===0?' : c\'était à toi':''}.`);
+    }
+  }
+  function check(){
+    if(!owned(0)){T.over=true;dialog('<h2>Tu as perdu la ville</h2><p>Ton dernier quartier est tombé. Les autres gangs se partagent Bitume.</p>',[{label:'Rejouer',fn:()=>{neu();render();}},{label:'Fermer',cls:'ghost'}]);return true;}
+    if([1,2,3].every(g=>!owned(g))){T.over=true;dialog(`<h2>Bitume est à toi</h2><p>Les trois gangs rivaux sont éliminés en ${T.turn} tours.</p>`,[{label:'Rejouer',fn:()=>{neu();render();}},{label:'Fermer',cls:'ghost'}]);return true;}
+    return false;
+  }
+  function endTurn(){
+    T.sel=-1;
+    for(const g of [1,2,3]){ai(g);if(check()){render();return;}}
+    T.turn++;T.phase='renfort';T.moved=false;T.left=reinf(0);
+    T.log.unshift(`Tour ${T.turn} : ${T.left} renforts à placer.`);
+    render();
+  }
+  $('#terr-body').addEventListener('click',e=>{
+    const c=e.target.closest('.cell');if(c){click(+c.dataset.i);return;}
+    const b=e.target.closest('[data-t]');if(!b)return;
+    if(b.dataset.t==='end')endTurn();
+    if(b.dataset.t==='new')dialog('<h2>Nouvelle partie ?</h2><p>La carte sera redistribuée.</p>',[{label:'Nouvelle partie',fn:()=>{neu();render();}},{label:'Annuler',cls:'ghost'}]);
+  });
+  return {open:render};
+})();
+
+/* ================= MODE BASTON ================= */
+const Baston=(()=>{
+  const W=960,H=600,KEY='bitume-baston-record';
+  let cv,ctx,bg,raf=0,last=0,running=false,S=null,ready=false;
+  const keys={};
+  const joy={on:false,id:null,ox:0,oy:0,x:0,y:0,dx:0,dy:0};
+  const inp={atk:false,dash:false,aim:null};
+  const TYPES={
+    voyou:{r:16,hp:2,sp:88,dmg:8,c:GANG_COLORS.meute,pts:10},
+    rapide:{r:12,hp:1,sp:150,dmg:6,c:GANG_COLORS.crocs,pts:15},
+    costaud:{r:24,hp:5,sp:58,dmg:14,c:GANG_COLORS.corbeaux,pts:30},
+    chef:{r:36,hp:14,sp:72,dmg:20,c:'#ff4fa3',pts:150}};
+
+  function makeBg(){
+    const b=document.createElement('canvas');b.width=W;b.height=H;const g=b.getContext('2d');
+    g.fillStyle='#14183a';g.fillRect(0,0,W,H);
+    // trottoirs
+    g.fillStyle='#1d2250';g.fillRect(0,0,W,90);g.fillRect(0,H-90,W,90);
+    g.strokeStyle='#262c60';g.lineWidth=1;
+    for(let x=0;x<W;x+=40){g.beginPath();g.moveTo(x,0);g.lineTo(x,90);g.moveTo(x,H-90);g.lineTo(x,H);g.stroke();}
+    g.fillStyle='#2b3170';g.fillRect(0,88,W,4);g.fillRect(0,H-92,W,4);
+    // marquage
+    g.strokeStyle='rgba(255,181,71,.55)';g.lineWidth=4;g.setLineDash([34,26]);
+    g.beginPath();g.moveTo(0,H/2);g.lineTo(W,H/2);g.stroke();g.setLineDash([]);
+    // passage piéton
+    g.fillStyle='rgba(238,234,255,.13)';for(let y=104;y<H-104;y+=26)g.fillRect(W*0.72,y,60,14);
+    // plaques d'égout
+    [[220,200],[640,420]].forEach(([x,y])=>{g.fillStyle='#0f1230';g.beginPath();g.arc(x,y,20,0,7);g.fill();g.strokeStyle='#2f3772';g.lineWidth=2;
+      for(let k=-12;k<=12;k+=6){g.beginPath();g.moveTo(x-14,y+k);g.lineTo(x+14,y+k);g.stroke();}});
+    // graffitis
+    g.save();g.font='40px Bungee, Impact, sans-serif';g.fillStyle='rgba(255,79,163,.20)';g.translate(300,64);g.rotate(-.05);g.fillText('BITUME',0,0);g.restore();
+    g.save();g.font='30px Bungee, Impact, sans-serif';g.fillStyle='rgba(79,209,255,.16)';g.translate(620,H-30);g.rotate(.04);g.fillText('LA MEUTE',0,0);g.restore();
+    // lampadaires
+    [[120,90],[480,90],[840,90],[300,H-90],[660,H-90]].forEach(([x,y])=>{
+      const r=g.createRadialGradient(x,y,4,x,y,170);r.addColorStop(0,'rgba(255,181,71,.30)');r.addColorStop(1,'rgba(255,181,71,0)');
+      g.fillStyle=r;g.fillRect(x-170,y-170,340,340);g.fillStyle='#ffd58a';g.beginPath();g.arc(x,y,5,0,7);g.fill();});
+    return b;
+  }
+  function init(){
+    cv=$('#baston-cv');ctx=cv.getContext('2d');bg=makeBg();ready=true;
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{bg=makeBg();if(!running)draw();});
+    const pos=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height];};
+    cv.addEventListener('pointerdown',e=>{
+      if(!running)return;e.preventDefault();
+      const [x,y]=pos(e);
+      if(e.pointerType==='mouse'){inp.aim=[x,y];inp.atk=true;return;}
+      if(x<W*0.55&&!joy.on){joy.on=true;joy.id=e.pointerId;joy.ox=x;joy.oy=y;joy.x=x;joy.y=y;joy.dx=joy.dy=0;try{cv.setPointerCapture(e.pointerId);}catch(_){} }
+      else inp.atk=true;
+    });
+    cv.addEventListener('pointermove',e=>{
+      const [x,y]=pos(e);
+      if(e.pointerType==='mouse'){inp.aim=[x,y];return;}
+      if(joy.on&&e.pointerId===joy.id){let dx=x-joy.ox,dy=y-joy.oy;const l=Math.hypot(dx,dy),m=60;if(l>m){dx*=m/l;dy*=m/l;}joy.x=joy.ox+dx;joy.y=joy.oy+dy;joy.dx=dx/m;joy.dy=dy/m;}
+    });
+    const up=e=>{if(e.pointerType==='mouse'){inp.atk=false;return;}if(e.pointerId===joy.id){joy.on=false;joy.id=null;joy.dx=joy.dy=0;}};
+    cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+    const hold=(id,k)=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();inp[k]=true;});['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,()=>inp[k]=false));};
+    hold('#pad-atk','atk');hold('#pad-dash','dash');
+    $('#bo-btn').addEventListener('click',start);
+  }
+  window.addEventListener('keydown',e=>{
+    if($('#baston').hidden)return;
+    if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)&&running)e.preventDefault();
+    keys[e.code]=true;
+    if(!running&&(e.code==='Enter')&&!$('#baston-over').hidden)start();
+  });
+  window.addEventListener('keyup',e=>{keys[e.code]=false;});
+  window.addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
+
+  function start(){
+    S={p:{x:W/2,y:H/2,r:18,hp:100,max:100,dir:0,atkCd:0,swing:0,hit:null,dash:0,dashCd:0,inv:0},
+       en:[],fx:[],pk:[],wave:0,left:0,spT:0,boss:false,kos:0,score:0,shake:0,banner:0,over:false,t:0};
+    nextWave();
+    $('#baston-over').hidden=true;
+    running=true;last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
+    cv.focus&&cv.focus();
+  }
+  function nextWave(){S.wave++;S.left=3+S.wave*2;S.spT=.8;S.boss=S.wave%5===0;S.banner=2.2;}
+  function spawn(type){
+    const t=TYPES[type],side=rnd(0,3);let x,y;
+    if(side===0){x=-30;y=rnd(40,H-40);}else if(side===1){x=W+30;y=rnd(40,H-40);}else if(side===2){x=rnd(40,W-40);y=-30;}else{x=rnd(40,W-40);y=H+30;}
+    const w=S.wave;
+    S.en.push({type,x,y,r:t.r,hp:t.hp+(type==='chef'?w*2:0)+(type==='costaud'?Math.floor(w/4):0),max:0,sp:t.sp+w*(type==='chef'?1:3),dmg:t.dmg,c:t.c,pts:t.pts,vx:0,vy:0,flash:0,wob:Math.random()*6});
+    const e=S.en[S.en.length-1];e.max=e.hp;
+  }
+  function burst(x,y,col,n){for(let i=0;i<n;i++){const a=Math.random()*6.28,s=rnd(60,240);S.fx.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.4+Math.random()*.3,c:col,r:rnd(2,4)});}}
+  function floatTxt(x,y,txt,col){S.fx.push({x,y,vx:0,vy:-50,life:.9,c:col,txt});}
+  function update(dt){
+    const p=S.p;S.t+=dt;
+    let ix=((keys.ArrowRight||keys.KeyD)?1:0)-((keys.ArrowLeft||keys.KeyA||keys.KeyQ)?1:0);
+    let iy=((keys.ArrowDown||keys.KeyS)?1:0)-((keys.ArrowUp||keys.KeyW||keys.KeyZ)?1:0);
+    if(joy.on){ix=joy.dx;iy=joy.dy;}
+    const l=Math.hypot(ix,iy);if(l>1){ix/=l;iy/=l;}
+    if(l>.2)p.dir=Math.atan2(iy,ix);
+    p.atkCd-=dt;p.dashCd-=dt;p.inv-=dt;p.swing-=dt;
+    if((inp.dash||keys.ShiftLeft||keys.ShiftRight||keys.KeyK)&&p.dashCd<=0){p.dash=.15;p.dashCd=.9;p.inv=Math.max(p.inv,.3);burst(p.x,p.y,'rgba(255,181,71,.8)',8);}
+    let vx=ix*235,vy=iy*235;
+    if(p.dash>0){p.dash-=dt;vx=Math.cos(p.dir)*640;vy=Math.sin(p.dir)*640;}
+    p.x=clamp(p.x+vx*dt,p.r,W-p.r);p.y=clamp(p.y+vy*dt,p.r,H-p.r);
+    if((inp.atk||keys.Space||keys.KeyJ)&&p.atkCd<=0){
+      if(inp.aim)p.dir=Math.atan2(inp.aim[1]-p.y,inp.aim[0]-p.x);
+      else if(l<=.2){let best=null,bd=1e9;S.en.forEach(e=>{const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;best=e;}});if(best&&bd<140)p.dir=Math.atan2(best.y-p.y,best.x-p.x);}
+      p.atkCd=.32;p.swing=.16;p.hit=new Set();
+    }
+    if(p.swing>0){
+      S.en.forEach(e=>{
+        if(p.hit.has(e))return;
+        const dx=e.x-p.x,dy=e.y-p.y,d=Math.hypot(dx,dy);
+        let da=Math.atan2(dy,dx)-p.dir;da=Math.atan2(Math.sin(da),Math.cos(da));
+        if(d<p.r+e.r+50&&Math.abs(da)<1.05){
+          p.hit.add(e);e.hp--;e.flash=.12;const kb=e.type==='chef'?160:e.type==='costaud'?240:380;
+          e.vx+=Math.cos(p.dir)*kb;e.vy+=Math.sin(p.dir)*kb;S.shake=Math.max(S.shake,4);
+          burst(e.x,e.y,'#eeeaff',6);
+          if(e.hp<=0){e.dead=true;S.kos++;S.score+=e.pts*(1+Math.floor(S.wave/3));burst(e.x,e.y,e.c,18);floatTxt(e.x,e.y-e.r,'KO','#ffb547');
+            if(Math.random()<(e.type==='chef'?1:.11))S.pk.push({x:e.x,y:e.y,t:9});}
+        }
+      });
+    }
+    S.en.forEach((e,i)=>{
+      const dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1;
+      e.wob+=dt*8;e.flash-=dt;
+      const st=e.flash>0?0.2:1;
+      e.x+=(dx/d*e.sp*st+e.vx)*dt;e.y+=(dy/d*e.sp*st+e.vy)*dt;
+      e.vx*=Math.pow(.02,dt);e.vy*=Math.pow(.02,dt);
+      for(let j=i+1;j<S.en.length;j++){const o=S.en[j],ox=o.x-e.x,oy=o.y-e.y,od=Math.hypot(ox,oy)||1,m=e.r+o.r;
+        if(od<m){const push=(m-od)/2;e.x-=ox/od*push;e.y-=oy/od*push;o.x+=ox/od*push;o.y+=oy/od*push;}}
+      if(d<p.r+e.r&&p.inv<=0){p.hp-=e.dmg;p.inv=.6;S.shake=9;burst(p.x,p.y,'#ff5d5d',12);floatTxt(p.x,p.y-26,'−'+e.dmg,'#ff5d5d');e.vx-=dx/d*300;e.vy-=dy/d*300;}
+    });
+    S.en=S.en.filter(e=>!e.dead);
+    if(S.left>0){S.spT-=dt;if(S.spT<=0){S.left--;S.spT=Math.max(.28,1.1-S.wave*.06);
+      const w=S.wave,r=Math.random();spawn(w>=3&&r<.18?'costaud':w>=2&&r<.45?'rapide':'voyou');}}
+    else if(S.boss&&S.en.length<3){S.boss=false;spawn('chef');floatTxt(W/2,80,'UN CHEF ARRIVE','#ff4fa3');}
+    else if(!S.boss&&S.en.length===0){p.hp=Math.min(p.max,p.hp+10);nextWave();}
+    S.pk.forEach(k=>{k.t-=dt;if(Math.hypot(k.x-p.x,k.y-p.y)<p.r+14){k.t=0;p.hp=Math.min(p.max,p.hp+25);floatTxt(p.x,p.y-26,'+25','#5fe3a1');}});
+    S.pk=S.pk.filter(k=>k.t>0);
+    S.fx.forEach(f=>{f.life-=dt;f.x+=f.vx*dt;f.y+=f.vy*dt;if(!f.txt){f.vx*=.9;f.vy*=.9;}});
+    S.fx=S.fx.filter(f=>f.life>0);
+    S.shake=Math.max(0,S.shake-dt*30);S.banner-=dt;
+    if(p.hp<=0)gameOver();
+  }
+  function body(x,y,r,col,dir,flash,wob){
+    ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(x,y+r*.8,r*.95,r*.4,0,0,7);ctx.fill();
+    const bob=Math.sin(wob||0)*1.5;
+    ctx.fillStyle=flash?'#ffffff':col;ctx.beginPath();ctx.arc(x,y+bob,r,0,7);ctx.fill();
+    ctx.lineWidth=3;ctx.strokeStyle='rgba(10,12,35,.65)';ctx.stroke();
+    ctx.fillStyle='rgba(10,12,35,.75)';
+    ctx.beginPath();ctx.arc(x+Math.cos(dir)*r*.55,y+bob+Math.sin(dir)*r*.55,r*.22,0,7);ctx.fill();
+  }
+  function draw(){
+    if(!ctx)return;
+    ctx.save();
+    if(S&&S.shake>0)ctx.translate((Math.random()-.5)*S.shake,(Math.random()-.5)*S.shake);
+    ctx.drawImage(bg,0,0);
+    if(!S){ctx.restore();return;}
+    const p=S.p;
+    S.pk.forEach(k=>{const a=k.t<2?(Math.sin(k.t*20)>0?1:.3):1;ctx.globalAlpha=a;ctx.fillStyle='rgba(95,227,161,.25)';ctx.beginPath();ctx.arc(k.x,k.y,16,0,7);ctx.fill();
+      ctx.fillStyle='#5fe3a1';ctx.fillRect(k.x-9,k.y-3,18,6);ctx.fillRect(k.x-3,k.y-9,6,18);ctx.globalAlpha=1;});
+    S.en.forEach(e=>{
+      const dir=Math.atan2(p.y-e.y,p.x-e.x);
+      body(e.x,e.y,e.r,e.c,dir,e.flash>0,e.wob);
+      if(e.max>2){const w=e.r*2;ctx.fillStyle='rgba(10,12,35,.8)';ctx.fillRect(e.x-w/2,e.y-e.r-12,w,5);ctx.fillStyle=e.c;ctx.fillRect(e.x-w/2,e.y-e.r-12,w*e.hp/e.max,5);}
+      if(e.type==='chef'){ctx.fillStyle='#ffb547';ctx.beginPath();ctx.moveTo(e.x-14,e.y-e.r+4);ctx.lineTo(e.x-10,e.y-e.r-10);ctx.lineTo(e.x-3,e.y-e.r);ctx.lineTo(e.x+3,e.y-e.r-12);ctx.lineTo(e.x+9,e.y-e.r);ctx.lineTo(e.x+14,e.y-e.r-10);ctx.lineTo(e.x+14,e.y-e.r+4);ctx.fill();}
+    });
+    if(p.swing>0){
+      ctx.strokeStyle=`rgba(238,234,255,${p.swing/.16*.8})`;ctx.lineWidth=10;ctx.lineCap='round';
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r+34,p.dir-1,p.dir+1);ctx.stroke();
+    }
+    const blink=p.inv>0&&Math.floor(S.t*20)%2===0;
+    if(!blink){body(p.x,p.y,p.r,'#ffb547',p.dir,false,0);
+      ctx.fillStyle='#ff4fa3';ctx.fillRect(p.x-p.r*.8,p.y-p.r*.35,p.r*1.6,4);}
+    S.fx.forEach(f=>{ctx.globalAlpha=Math.max(0,Math.min(1,f.life*2));
+      if(f.txt){ctx.font='18px Bungee, Impact, sans-serif';ctx.textAlign='center';ctx.fillStyle=f.c;ctx.fillText(f.txt,f.x,f.y);}
+      else{ctx.fillStyle=f.c;ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,7);ctx.fill();}
+      ctx.globalAlpha=1;});
+    ctx.restore();
+    // HUD
+    ctx.fillStyle='rgba(13,17,48,.75)';ctx.fillRect(14,14,232,30);
+    ctx.fillStyle='#2f3772';ctx.fillRect(20,22,220,14);
+    ctx.fillStyle=p.hp>30?'#5fe3a1':'#ff5d5d';ctx.fillRect(20,22,220*Math.max(0,p.hp)/p.max,14);
+    ctx.font='16px Bungee, Impact, sans-serif';ctx.textAlign='right';ctx.fillStyle='#eeeaff';
+    ctx.fillText(`VAGUE ${S.wave}   KO ${S.kos}   ${fmt(S.score)} PTS`,W-18,36);
+    if(S.banner>0){ctx.globalAlpha=Math.min(1,S.banner);ctx.textAlign='center';ctx.font='54px Bungee, Impact, sans-serif';
+      ctx.fillStyle='#ff4fa3';ctx.fillText(`VAGUE ${S.wave}`,W/2+4,H/2-36);ctx.fillStyle='#ffb547';ctx.fillText(`VAGUE ${S.wave}`,W/2,H/2-40);
+      if(S.boss){ctx.font='20px Bungee, Impact, sans-serif';ctx.fillStyle='#eeeaff';ctx.fillText('UN CHEF EST DANS LE COIN',W/2,H/2);}
+      ctx.globalAlpha=1;}
+    if(joy.on){ctx.strokeStyle='rgba(238,234,255,.35)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(joy.ox,joy.oy,60,0,7);ctx.stroke();
+      ctx.fillStyle='rgba(255,181,71,.55)';ctx.beginPath();ctx.arc(joy.x,joy.y,26,0,7);ctx.fill();}
+  }
+  function loop(t){
+    if(!running)return;
+    const dt=Math.min(.05,(t-last)/1000||0);last=t;
+    update(dt);draw();
+    if(running)raf=requestAnimationFrame(loop);
+  }
+  function gameOver(){
+    running=false;cancelAnimationFrame(raf);draw();
+    const best=store.get(KEY,0),rec=S.score>best;if(rec)store.set(KEY,S.score);
+    $('#bo-title').textContent='Au tapis';
+    $('#bo-text').innerHTML=`Vague ${S.wave} · ${S.kos} KO · <b class="mono">${fmt(S.score)} pts</b><br>${rec?'Nouveau record !':'Record : '+fmt(Math.max(best,S.score))+' pts'}`;
+    $('#bo-btn').textContent='Rejouer';
+    $('#baston-over').hidden=false;
+  }
+  function open(){
+    if(!ready)init();
+    if(!running){
+      const best=store.get(KEY,0);
+      if(!S){$('#bo-title').textContent='Baston de rue';$('#bo-text').innerHTML=`Les bandes rivales débarquent par vagues. Toutes les 5 vagues, un chef.${best?'<br>Record : '+fmt(best)+' pts':''}`;$('#bo-btn').textContent='Entrer dans la rue';}
+      else if(!S.over){$('#bo-title').textContent='Pause';$('#bo-text').textContent=`Vague ${S.wave} · ${fmt(S.score)} pts`;$('#bo-btn').textContent='Nouvelle baston';}
+      $('#baston-over').hidden=false;draw();
+    }
+  }
+  function stop(){if(running){running=false;cancelAnimationFrame(raf);}}
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&running){stop();open();}});
+  return {open,stop,best:()=>store.get(KEY,0)};
+})();
+
+/* ================= MODE BRAQUAGE ================= */
+const Heist=(()=>{
+  const KEY='bitume-casse-record';
+  const TARGETS=[
+    {id:'bijou',n:'Bijouterie Lumière',diff:0,loot:[3000,5000],d:"Des vitrines, un vigile fatigué, une alarme d'un autre siècle."},
+    {id:'casino',n:'Casino du Port',diff:1,loot:[9000,14000],d:"Des caméras partout, mais une salle des coffres mal gardée."},
+    {id:'banque',n:'Banque Centrale',diff:2,loot:[25000,40000],d:"Le coffre le plus solide de Bitume. Personne ne l'a jamais ouvert."}];
+  const CREW=[
+    {n:'Zoé « Volant »',skill:'conduite',sk:'Conduite',part:15,d:'Chauffeuse. Connaît chaque ruelle de Bitume.'},
+    {n:'Kev « Octet »',skill:'tech',sk:'Technique',part:15,d:'Hackeur. Caméras, codes, alarmes.'},
+    {n:'Momo « Tank »',skill:'force',sk:'Force',part:10,d:'Gros bras. Calme les vigiles sans un mot.'},
+    {n:'Lina « Ombre »',skill:'discretion',sk:'Discrétion',part:12,d:'Crocheteuse. Aucune serrure ne lui résiste.'},
+    {n:'Sam « Velours »',skill:'baratin',sk:'Baratin',part:10,d:'Beau-parleur. Peut convaincre n\'importe qui.'},
+    {n:'Rex « Mèche »',skill:'explosif',sk:'Explosifs',part:18,d:'Artificier. Ce qui ne s\'ouvre pas, il le fait sauter.'}];
+  const STAGES=[
+    {n:'Entrer',opts:[
+      {l:'Crocheter la porte de service',s:'discretion',ok:'La serrure cède sans un bruit. Vous êtes dedans.',ko:'Le crochet casse. Il faut forcer, et ça fait du bruit.'},
+      {l:'Se faire passer pour des techniciens',s:'baratin',ok:'Le gardien vous ouvre lui-même, en vous souhaitant bon courage.',ko:'Le gardien appelle sa hiérarchie pour vérifier. Ça sent mauvais.'},
+      {l:'Couper le courant du bâtiment',s:'tech',ok:'Noir complet. Les portes magnétiques se déverrouillent.',ko:'Le groupe électrogène démarre, et une alarme avec.'}]},
+    {n:'La sécurité',opts:[
+      {l:'Neutraliser le vigile',s:'force',ok:'Le vigile se retrouve ligoté dans le local à balais.',ko:'Le vigile se débat et appuie sur le bouton d\'alerte.'},
+      {l:'Boucler les caméras',s:'tech',ok:'Les écrans de surveillance tournent en boucle sur un couloir vide.',ko:'Une caméra de secours vous filme en plein visage.'},
+      {l:'Distraire l\'accueil',s:'baratin',ok:'L\'accueil est captivé par une histoire de chat coincé dans l\'ascenseur.',ko:'L\'histoire ne tient pas. On vous regarde de travers.'}]},
+    {n:'Le coffre',opts:[
+      {l:'Percer le coffre à l\'oreille',s:'discretion',ok:'Clic, clic, clac. La porte s\'ouvre en douceur.',ko:'Le mécanisme se bloque. Vous ne prenez que les tiroirs.',loot:.4},
+      {l:'Faire sauter la porte',s:'explosif',loud:22,bonus:1.25,ok:'BOUM. La porte vole, et tout le coffre est à vous.',ko:'La charge est trop faible. Beaucoup de bruit pour presque rien.',loot:.4},
+      {l:'Pirater la serrure numérique',s:'tech',ok:'Le code s\'affiche à l\'écran. Le coffre s\'ouvre.',ko:'Trois mauvais codes : verrouillage d\'urgence. Seuls les tiroirs restent.',loot:.4}]},
+    {n:'La fuite',opts:[
+      {l:'Course-poursuite en voiture',s:'conduite',ok:'Trois virages, un tunnel, et plus personne derrière vous.',ko:'Un barrage. Il faut lâcher des sacs pour passer.',loot:.7},
+      {l:'Se fondre dans la foule',s:'discretion',ok:'Vous disparaissez dans la foule du marché de nuit.',ko:'Quelqu\'un vous reconnaît. Vous filez en semant des billets.',loot:.7},
+      {l:'Bloquer la rue derrière vous',s:'force',ok:'Une benne renversée en travers de la rue. Les sirènes s\'éloignent.',ko:'La benne ne bouge pas. Vous courez, les sacs vous ralentissent.',loot:.7}]}];
+  let H=null;
+  const reset=()=>{H={step:'cible',cible:null,crew:[],stage:0,alarm:0,mult:1,base:0,story:[]};};
+  const stars=n=>'★'.repeat(n+1)+'☆'.repeat(2-n);
+  function render(){
+    if(!H)reset();
+    const root=$('#heist-body');
+    if(H.step==='cible'){
+      const best=store.get(KEY,0);
+      root.innerHTML=`<div class="col"><div class="panel"><h2>1 · Choisis ta cible</h2><p class="muted small">Plus la cible est grosse, plus il faut l'équipe parfaite.${best?` Meilleur butin : <b class="mono">${fmt(best)} €</b>.`:''}</p></div>
+        <div class="cards">${TARGETS.map((t,i)=>`<button class="card" type="button" data-h="cible" data-i="${i}"><span class="stars">${stars(t.diff)}</span><h3>${t.n}</h3><p class="small muted">${t.d}</p><span class="mono small">${fmt(t.loot[0])} – ${fmt(t.loot[1])} €</span></button>`).join('')}</div></div>`;
+    }else if(H.step==='equipe'){
+      const part=H.crew.reduce((s,i)=>s+CREW[i].part,0);
+      root.innerHTML=`<div class="col"><div class="panel"><div class="panel-head"><h2>2 · Ton équipe de trois</h2><span class="label">${H.cible.n}</span></div>
+        <p class="muted small">Chaque étape du casse demande une spécialité. Sans le bon profil, tu tentes quand même, mais à tes risques. Chaque équipier prend sa part du butin.</p></div>
+        <div class="cards">${CREW.map((c,i)=>`<button class="card ${H.crew.includes(i)?'on':''}" type="button" data-h="crew" data-i="${i}" aria-pressed="${H.crew.includes(i)}"><span class="skill">${c.sk}</span><h3>${c.n}</h3><p class="small muted">${c.d}</p><span class="mono small">Part : ${c.part} %</span></button>`).join('')}</div>
+        <div class="row"><button class="btn" type="button" data-h="go" ${H.crew.length===3?'':'disabled'}>Lancer le casse (${H.crew.length}/3 · parts ${part} %)</button><button class="btn ghost" type="button" data-h="back">Changer de cible</button></div></div>`;
+    }else if(H.step==='casse'){
+      const st=STAGES[H.stage],has=new Set(H.crew.map(i=>CREW[i].skill));
+      root.innerHTML=`<div class="grid2"><div class="col"><div class="panel">
+          <div class="panel-head"><h2>${H.stage+1}/4 · ${st.n}</h2><span class="label">${H.cible.n}</span></div>
+          <div><span class="label">Alarme · ${Math.round(H.alarm)} %</span><div class="alarm"><i style="width:${Math.min(100,H.alarm)}%"></i></div></div>
+          <div class="list">${st.opts.map((o,i)=>`<div class="job"><div><b>${o.l}</b><div class="muted small">${CREW.find(c=>c.skill===o.s).sk}${has.has(o.s)?' · un spécialiste est dans l\'équipe':' · personne de spécialisé'}</div></div>
+            <button class="btn sm ${has.has(o.s)?'':'ghost'}" type="button" data-h="opt" data-i="${i}">${Math.round(prob(o)*100)} %</button></div>`).join('')}</div></div></div>
+        <div class="col"><div class="panel"><h2>Le déroulé</h2><div class="story">${H.story.length?H.story.map(s=>`<p class="${s.c} small">${esc(s.t)}</p>`).join(''):'<p class="small muted">Il est 3 h du matin. La rue est vide. C\'est le moment.</p>'}</div>
+          <p class="small muted">Équipe : ${H.crew.map(i=>CREW[i].n).join(', ')}</p></div></div></div>`;
+    }else{
+      root.innerHTML=`<div class="grid2"><div class="panel">${H.result}<div class="row"><button class="btn" type="button" data-h="again">Nouveau casse</button><button class="btn ghost" type="button" data-go="menu">Menu</button></div></div>
+        <div class="panel"><h2>Le déroulé</h2><div class="story">${H.story.map(s=>`<p class="${s.c} small">${esc(s.t)}</p>`).join('')}</div></div></div>`;
+    }
+  }
+  function prob(o){const has=H.crew.some(i=>CREW[i].skill===o.s);return clamp((has?.9:.45)-H.cible.diff*.08,.1,.95);}
+  function choose(i){
+    const o=STAGES[H.stage].opts[i];
+    if(Math.random()<prob(o)){H.alarm+=rnd(0,6)+(o.loud||0);if(o.bonus)H.mult*=o.bonus;H.story.push({t:o.ok,c:'ok'});}
+    else{H.alarm+=22+H.cible.diff*10+rnd(0,8)+(o.loud||0);if(o.loot)H.mult*=o.loot;H.story.push({t:o.ko,c:'ko'});}
+    H.stage++;
+    if(H.alarm>=100){
+      H.step='fin';H.story.push({t:'Les sirènes encerclent le bâtiment. C\'est fini.',c:'ko'});
+      H.result=`<span class="label">Échec</span><h2>Pris la main dans le sac</h2><p>L'alarme a hurlé trop tôt. Toute l'équipe finit au poste. Zéro euro.</p>`;
+    }else if(H.stage>=STAGES.length){
+      H.step='fin';
+      const loot=Math.round(H.base*H.mult/10)*10,part=H.crew.reduce((s,i)=>s+CREW[i].part,0),take=Math.round(loot*(100-part)/100);
+      const best=store.get(KEY,0);if(take>best)store.set(KEY,take);
+      H.result=`<span class="label">Réussi · ${H.cible.n}</span><h2>Le casse est bouclé</h2>
+        <p>Butin total <b class="mono">${fmt(loot)} €</b>, parts de l'équipe ${part} %.</p>
+        <div><span class="label">Ta part</span><div class="big mono">${fmt(take)} €</div></div>
+        <p class="small muted">${take>best?'Nouveau record !':'Meilleur butin : '+fmt(Math.max(best,take))+' €'}</p>`;
+    }
+    render();
+  }
+  $('#heist-body').addEventListener('click',e=>{
+    const b=e.target.closest('[data-h]');if(!b||b.disabled)return;const a=b.dataset.h,i=+b.dataset.i;
+    if(a==='cible'){H.cible=TARGETS[i];H.step='equipe';H.crew=[];}
+    else if(a==='crew'){const k=H.crew.indexOf(i);if(k>=0)H.crew.splice(k,1);else if(H.crew.length<3)H.crew.push(i);else toast('Trois équipiers maximum. Retire quelqu\'un d\'abord.');}
+    else if(a==='back'){H.step='cible';}
+    else if(a==='go'){H.step='casse';H.stage=0;H.alarm=0;H.mult=1;H.story=[];H.base=rnd(H.cible.loot[0],H.cible.loot[1]);}
+    else if(a==='opt'){choose(i);return;}
+    else if(a==='again'){reset();}
+    render();window.scrollTo(0,0);
+  });
+  return {open:render,best:()=>store.get(KEY,0)};
+})();
+
+/* ================= Navigation ================= */
+const SCREENS=['menu','carriere','territoires','baston','braquage'];
+function renderMenu(){
+  const s=Career.summary();$('#menu-carriere-info').textContent=s?'Continuer · '+s:'Nouvelle partie';
+  const b=Baston.best();$('#menu-baston-info').textContent=b?`Record : ${fmt(b)} pts`:'Record : aucun';
+  const h=Heist.best();$('#menu-braquage-info').textContent=h?`Meilleur butin : ${fmt(h)} €`:'Meilleur butin : aucun';
+}
+function go(id,fromHash){
+  if(!SCREENS.includes(id))id='menu';
+  SCREENS.forEach(s=>{$('#'+s).hidden=s!==id;});
+  if(id!=='baston')Baston.stop();
+  if(id==='menu')renderMenu();
+  else if(id==='carriere')Career.open();
+  else if(id==='territoires')Terr.open();
+  else if(id==='baston')Baston.open();
+  else if(id==='braquage')Heist.open();
+  if(!fromHash){try{if(location.hash.slice(1)!==id)location.hash=id;}catch(e){}}
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){e.preventDefault();go(g.dataset.go);}});
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1)||'menu';if($('#'+h)&&$('#'+h).hidden)go(h,true);});
+go((location.hash||'').slice(1)||'menu',true);
+})();
+</script>
+</body>
+</html>
