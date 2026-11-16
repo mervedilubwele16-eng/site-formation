@@ -1,0 +1,8 @@
+{
+  "headerRight": "fait par code",
+  "scenes": [
+    { "section": "le secret", "text": "Ce skill crée des *vidéos* tout seul", "big": "Skill *Vidéo*", "cards": [{ "icon": "play", "label": "motion", "name": "66 styles" }], "duration": 3 },
+    { "section": "comment ça marche", "text": "Tu tapes *une seule* ligne", "window": { "title": "terminal", "question": "Quelle vidéo on fait ?", "prompt": "Un reel sur ma formation" }, "duration": 3.5 },
+    { "section": "le résultat", "text": "Et il anime *chaque scène*", "big": "Pas généré par *IA*", "counter": { "from": 0, "to": 334229, "suffix": " vues", "style": "big" }, "duration": 3.5 }
+  ]
+}

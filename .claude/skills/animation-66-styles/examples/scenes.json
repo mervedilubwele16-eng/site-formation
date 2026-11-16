@@ -1,0 +1,8 @@
+{
+  "scenes": [
+    { "text": "Tu veux lancer ta *formation* ?", "kicker": "Astuce du jour" },
+    { "text": "Commence par *une seule* promesse claire" },
+    { "text": "Puis montre le *résultat*", "duration": 2.5 },
+    { "text": "Abonne-toi pour la suite 👉", "anim": "pop" }
+  ]
+}

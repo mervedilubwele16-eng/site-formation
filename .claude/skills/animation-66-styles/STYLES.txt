@@ -1,0 +1,69 @@
+ 1  neon-nuit        Néon nuit                fond=grid, anim=neon
+ 2  synthwave        Synthwave 80s            fond=grid, anim=slideUp
+ 3  minimal-blanc    Minimal blanc            fond=solid, anim=fade
+ 4  minimal-noir     Minimal noir             fond=solid, anim=rise
+ 5  corporate        Corporate bleu           fond=gradient, anim=slideLeft
+ 6  luxe-or          Luxe or                  fond=radial, anim=blurIn
+ 7  retro-tv         Rétro TV                 fond=noise, anim=glitch
+ 8  matrix           Code Matrix              fond=matrix, anim=scramble
+ 9  terminal         Terminal hacker          fond=solid, anim=typewriter
+10  pop-bd           Pop BD                   fond=halftone, anim=pop
+11  bonbon           Bonbon pastel            fond=blobs, anim=bounce
+12  enfant           Monde enfant             fond=confetti, anim=elastic
+13  aurore           Aurore boréale           fond=aurora, anim=fade
+14  espace           Espace profond           fond=stars, anim=zoomOut
+15  galaxie          Galaxie                  fond=stars, anim=spin
+16  ocean            Océan                    fond=waves, anim=wave
+17  coucher-soleil   Coucher de soleil        fond=sunburst, anim=rise
+18  foret            Forêt zen                fond=bokeh, anim=blurIn
+19  papier           Papier craft             fond=paper, anim=jitter
+20  cahier           Cahier d’école           fond=notebook, anim=typewriter
+21  tableau-noir     Tableau noir             fond=chalk, anim=jitter
+22  blueprint        Plan d’architecte        fond=grid2d, anim=drawIn
+23  cinema           Cinéma                   fond=radial, anim=fade
+24  trailer          Bande-annonce            fond=radial, anim=stamp
+25  film-ancien      Film ancien              fond=noise, anim=flicker
+26  noir-blanc       Noir & blanc             fond=gradient, anim=slideDown
+27  brutaliste       Brutaliste               fond=stripes, anim=stamp
+28  suisse           Style suisse             fond=solid, anim=slideLeft
+29  bauhaus          Bauhaus                  fond=shapes, anim=pop
+30  memphis          Memphis 90s              fond=confetti, anim=swing
+31  vaporwave        Vaporwave                fond=sunburst, anim=wave
+32  cyberpunk        Cyberpunk                fond=grid, anim=glitch
+33  glitch-art       Glitch art               fond=noise, anim=glitch
+34  hologramme       Hologramme               fond=grid2d, anim=flicker
+35  tech-startup     Tech startup             fond=blobs, anim=rise
+36  gradient-mesh    Dégradé fluide           fond=blobs, anim=slideUp
+37  instagram        Story Instagram          fond=gradient, anim=pop
+38  tiktok           TikTok punchy            fond=solid, anim=stamp
+39  youtube          Miniature YouTube        fond=sunburst, anim=bounce
+40  podcast          Podcast                  fond=bars, anim=fade
+41  musique          Clip musique             fond=bars, anim=wave
+42  disco            Disco                    fond=bokeh, anim=spin
+43  fete             Fête                     fond=confetti, anim=bounce
+44  mariage          Mariage élégant          fond=bokeh, anim=blurIn
+45  noel             Noël                     fond=snow, anim=dropIn
+46  halloween        Halloween                fond=fog, anim=flicker
+47  horreur          Horreur                  fond=fog, anim=jitter
+48  sport            Sport énergie            fond=stripes, anim=slideLeft
+49  gaming           Gaming arcade            fond=pixels, anim=pop
+50  pixel-8bit       Pixel 8-bit              fond=pixels, anim=typewriter
+51  nature           Nature douce             fond=blobs, anim=rise
+52  desert           Désert                   fond=dunes, anim=fade
+53  montagne         Montagne                 fond=mountains, anim=slideUp
+54  ville-nuit       Ville la nuit            fond=city, anim=neon
+55  pluie            Pluie mélancolique       fond=rain, anim=fade
+56  feu              Feu                      fond=embers, anim=flicker
+57  glace            Glace                    fond=snow, anim=blurIn
+58  science          Science / molécules      fond=network, anim=drawIn
+59  education        Éducatif clair           fond=grid2d, anim=bounce
+60  finance          Finance / data           fond=chart, anim=slideUp
+61  magazine         Magazine mode            fond=solid, anim=slideDown
+62  japon            Japon zen                fond=sun, anim=blurIn
+63  graffiti         Graffiti urbain          fond=bricks, anim=stamp
+64  aquarelle        Aquarelle                fond=watercolor, anim=fade
+65  kaleido          Kaléidoscope             fond=kaleido, anim=spin
+66  hypnose          Hypnose                  fond=tunnel, anim=zoomOut
+67  produit-nuit     Produit nuit (glow)      fond=night, anim=blurIn
+68  editorial-cartes Éditorial cartes         fond=paperlight, anim=rise
+69  explainer-halftone Explainer halftone       fond=pastel, anim=rise
