@@ -108,3 +108,7 @@ Vitesse : ~1 s de calcul par seconde de vidéo en 1080×1920.
 Dans `scripts/engine.js`, ajouter une ligne au tableau `S` :
 `['id', 'Nom', fond, animation, police (sans|serif|mono), graisse, [fond1, fond2, texte, accent], [effets]]`.
 Fonds disponibles = clés de `BG`, animations = clés de `A`, effets : `glow vignette grain scan rgb shake letterbox border stroke scratches`.
+
+## Raccourcis
+
+Chaque style a sa commande `/anim-NN-id` (ex. `/anim-01-neon-nuit Mon texte|Scène 2`). Liste complète : `CODES.md`.
