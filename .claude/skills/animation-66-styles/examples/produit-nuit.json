@@ -1,0 +1,10 @@
+{
+  "title": "Ma Banque 2.0",
+  "scenes": [
+    { "text": "Reçois.", "card": { "brand": "MaBanque", "name": "Carte Premium" }, "duration": 2.4 },
+    { "text": "Convertis.", "phone": { "title": "Compte", "lines": ["Salaire|+ 2 000 €", "Courses|- 54 €", "Remboursement|+ 120 €"] }, "counter": { "from": 1480.15, "to": 3480.15, "suffix": " €", "prefix": "+ " }, "duration": 3 },
+    { "text": "Paie partout.", "card": { "brand": "MaBanque", "name": "Voyage" }, "duration": 2.4 },
+    { "text": "Solde total", "counter": { "from": 3819.55, "to": 5244.99, "suffix": " €", "style": "big" }, "duration": 2.6 },
+    { "text": "MaBanque", "kicker": "Ton argent voyage avec toi.", "burst": true, "duration": 2.5 }
+  ]
+}

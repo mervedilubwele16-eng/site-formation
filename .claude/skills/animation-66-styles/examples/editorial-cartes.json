@@ -1,0 +1,12 @@
+{
+  "scenes": [
+    { "text": "Lancer sa formation *en ligne*", "kicker": "En 4 étapes", "caption": "Voici la *méthode* complète.", "duration": 2.5 },
+    { "text": "Une formation, *4 piliers.*", "tag": "simple et gratuit", "cards": [
+        { "icon": "mic", "label": "La voix", "name": "Enregistrer" },
+        { "icon": "scissors", "label": "Les ciseaux", "name": "Monter" },
+        { "icon": "play", "label": "La vidéo", "name": "Publier" },
+        { "icon": "heart", "label": "La communauté", "name": "Fidéliser" }
+      ], "caption": "D'abord la *voix*, ensuite le *montage*, puis tu *publies* et tu *fidélises*.", "duration": 5 },
+    { "text": "Commence *aujourd'hui.*", "window": { "title": "mon-projet", "question": "Qu'est-ce qu'on construit ?", "prompt": "Ma première leçon de 5 minutes" }, "caption": "Tape ta *première* idée.", "duration": 3.5 }
+  ]
+}

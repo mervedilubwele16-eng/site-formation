@@ -64,3 +64,6 @@
 64  aquarelle        Aquarelle                fond=watercolor, anim=fade
 65  kaleido          Kaléidoscope             fond=kaleido, anim=spin
 66  hypnose          Hypnose                  fond=tunnel, anim=zoomOut
+67  produit-nuit     Produit nuit (glow)      fond=night, anim=blurIn
+68  editorial-cartes Éditorial cartes         fond=paperlight, anim=rise
+69  explainer-halftone Explainer halftone       fond=pastel, anim=rise

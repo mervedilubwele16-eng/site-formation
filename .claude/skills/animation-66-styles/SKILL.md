@@ -1,9 +1,9 @@
 ---
 name: animation-66-styles
-description: Créer une vidéo animée (texte animé, motion design, intro, Reel/TikTok/Short, slogan, citation, leçon, annonce) en MP4 dans l'un des 66 styles visuels prêts à l'emploi (néon, synthwave, minimal, cinéma, BD, TikTok, Matrix, aquarelle, Noël…), en 9:16, 16:9, 1:1 ou 4:5, avec voix-off ou musique en option. À utiliser dès que l'utilisateur veut « animer » un texte ou une vidéo dans un style, choisir un style d'animation, ou voir les styles disponibles.
+description: Créer une vidéo animée (texte animé, motion design, intro, Reel/TikTok/Short explicatif, pub produit, slogan, citation, leçon, annonce) en MP4 dans l'un des 69 styles visuels prêts à l'emploi (66 styles de texte animé : néon, synthwave, minimal, cinéma, BD, TikTok, Matrix, aquarelle, Noël… + 3 styles de Reels explicatifs avec cartes, compteurs, fenêtres d'appli, sous-titres en pastilles et transitions en trame de points), en 9:16, 16:9, 1:1 ou 4:5, avec voix-off ou musique en option. À utiliser dès que l'utilisateur veut « animer » un texte ou une vidéo dans un style, choisir un style d'animation, ou voir les styles disponibles.
 ---
 
-# Animation vidéo — 66 styles
+# Animation vidéo — 66 styles (+3 styles Reels explicatifs)
 
 Moteur maison : chaque frame est dessinée dans un canvas (Chromium via Playwright), puis encodée en MP4 H.264 par ffmpeg. Rendu déterministe, aucune clé API, aucun crédit consommé.
 
@@ -27,6 +27,7 @@ Familles pour orienter le choix :
 | Doux / nature | 13 aurore, 16 ocean, 18 foret, 51 nature, 57 glace, 64 aquarelle |
 | Fun / enfants | 10 pop-bd, 11 bonbon, 12 enfant, 30 memphis, 43 fete |
 | Événements | 45 noel, 46 halloween, 47 horreur, 42 disco |
+| Reels explicatifs / pub produit | 67 produit-nuit, 68 editorial-cartes, 69 explainer-halftone (voir §2 bis) |
 
 ## 2. Écrire les scènes
 
@@ -47,6 +48,33 @@ Une scène = un écran de texte. Fichier JSON (voir `examples/scenes.json`) :
 
 Raccourci sans fichier : `--text "Scène 1|Scène 2|Scène 3"`.
 
+## 2 bis. Styles « Reels explicatifs » (67 à 69)
+
+Ces 3 styles ont une mise en page riche. Chaque scène peut contenir, en plus de `text` :
+
+| Champ | Effet |
+|---|---|
+| `cards: [{icon, label, name, at}]` | cartes blanches qui apparaissent une par une (grille 2–4 colonnes). Icônes : `play scissors wave eye star check bolt mic code chat heart rocket` ; `at` = instant d'apparition (s) |
+| `counter: {from, to, prefix, suffix, decimals, style, at, time}` | nombre qui défile (format français `5 244,99 €`). `style: "pill"` (pastille verte lumineuse, défaut) ou `"big"` (gros chiffre) |
+| `phone: {title, lines: ["Libellé\|+ 120 €", …]}` | téléphone qui flotte, lignes de transactions (montants `+` en vert) |
+| `card: {brand, name, number}` | carte lumineuse qui pivote en faux 3D avec reflet |
+| `window: {title, question, prompt}` | fenêtre d'application avec texte qui se tape tout seul |
+| `caption` | sous-titres en pastilles noires en bas (groupes de 1 à 3 mots, `*mot*` = pastille couleur) |
+| `tag` | pastille verte sous le titre (editorial) |
+| `big` | gros titre condensé au milieu (explainer), `*mot*` en rouge |
+| `section` / `right` | micro-en-tête mono en haut (explainer) |
+| `burst: true` | scène finale : logo/texte au centre avec explosion de rayons (produit) ; `kicker` = slogan dessous |
+| `transition: false` | désactive la transition en trame de points (explainer) |
+
+Champs globaux du JSON : `title` (titre fixe en haut, style 67), `headerRight` (style 69), `logo` (chemin d'image, tuile arrondie au-dessus du titre, style 67). Équivalents CLI : `--title`, `--header`, `--logo`.
+
+- **67 Produit nuit** : fond noir, halo bleu, sol en perspective, titre italique fixe, mots courts (« Reçois. », « Paie partout. ») en flou → net, carte/téléphone qui flottent, compteur vert. Idéal pub d'appli, fintech, produit tech.
+- **68 Éditorial cartes** : fond blanc cassé, titre gras + mots-clés en italique serif orange, cartes avec icônes, fenêtre d'appli, sous-titres en pastilles noires/orange. Idéal tuto « outils », listes, étapes.
+- **69 Explainer halftone** : fond clair avec halos pastel, texte karaoké en haut à gauche (mot suivant grisé), gros titre condensé, transitions en trame de points noirs, petites étincelles. Laisse le bas de l'écran libre pour incruster une personne ou un avatar. Idéal storytelling, coulisses, « comment ça marche ».
+
+Exemples prêts à rendre : `examples/produit-nuit.json`, `examples/editorial-cartes.json`, `examples/explainer-halftone.json`.
+Ne jamais reproduire les logos, marques ou personnages d'un tiers : utiliser ceux de l'utilisateur (`--logo`).
+
 ## 3. Rendre
 
 ```bash
@@ -62,7 +90,7 @@ Options :
 - `--upper` : texte en majuscules ; `--watermark "@moncompte"` : signature en bas
 
 Autres modes :
-- `--catalogue --out planche.png [--format 16:9]` : planche des 66 styles
+- `--catalogue --out planche.png [--format 16:9]` : planche de tous les styles
 - `--showreel --out demo.mp4 [--styles 1,8,38] [--text "Mon slogan"]` : 1,8 s par style, pour comparer plusieurs styles sur le même texte
 
 Vitesse : ~1 s de calcul par seconde de vidéo en 1080×1920.
